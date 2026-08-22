@@ -1,9 +1,23 @@
+import { createClient } from '@supabase/supabase-js';
+
 /**
- * Supabase Client Integration for DayFlow / NexaWork
+ * Official Supabase JS SDK Integration for DayFlow / NexaWork
  */
 
 const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
 const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+
+export const isSupabaseConfigured =
+  Boolean((import.meta as any).env?.VITE_SUPABASE_URL) &&
+  Boolean((import.meta as any).env?.VITE_SUPABASE_ANON_KEY) &&
+  !(import.meta as any).env?.VITE_SUPABASE_URL.includes('your-project');
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
 
 export interface SupabaseConfig {
   url: string;
@@ -12,44 +26,28 @@ export interface SupabaseConfig {
 }
 
 export const getSupabaseConfig = (): SupabaseConfig => {
-  const isConfigured =
-    Boolean((import.meta as any).env?.VITE_SUPABASE_URL) &&
-    Boolean((import.meta as any).env?.VITE_SUPABASE_ANON_KEY) &&
-    !(import.meta as any).env?.VITE_SUPABASE_URL.includes('your-project');
-
   return {
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
-    isConfigured,
+    isConfigured: isSupabaseConfigured,
   };
 };
 
 /**
- * Execute raw RPC or fetch query against Supabase REST API
+ * Helper to query Supabase tables using the official SDK
  */
-export async function querySupabaseTable(table: string, queryParams: string = '') {
-  const config = getSupabaseConfig();
-  if (!config.isConfigured) {
-    console.warn('[Supabase] VITE_SUPABASE_URL not configured. Operating in local mock store mode.');
+export async function querySupabaseTable(table: string) {
+  if (!isSupabaseConfigured) {
+    console.warn('[Supabase] VITE_SUPABASE_URL not configured. Operating in local mock mode.');
     return null;
   }
 
   try {
-    const response = await fetch(`${config.url}/rest/v1/${table}?${queryParams}`, {
-      headers: {
-        apikey: config.anonKey,
-        Authorization: `Bearer ${config.anonKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Supabase REST query failed with status ${response.status}`);
-    }
-
-    return await response.json();
+    const { data, error } = await supabase.from(table).select('*');
+    if (error) throw error;
+    return data;
   } catch (err) {
-    console.error('[Supabase Query Error]', err);
+    console.error(`[Supabase Query Error for ${table}]`, err);
     return null;
   }
 }
