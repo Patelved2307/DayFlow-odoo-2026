@@ -25,6 +25,9 @@ export const AuthPage: React.FC = () => {
 
   // Demo candidates database mock for recruitment gate
   const interviewProfilesMock: Record<string, { status: 'Pending' | 'Approved' | 'Rejected'; name: string }> = {
+    '2026': { status: 'Approved', name: 'Patel Ved' },
+    'EMP-2026': { status: 'Approved', name: 'Patel Ved' },
+    'COEDELKOLH02026': { status: 'Approved', name: 'Patel Ved' },
     COEDELKOLH00508: { status: 'Approved', name: 'Aditi Shah' },
     COEDELKOLH00509: { status: 'Pending', name: 'Marcus Vance' },
     COEDELKOLH00510: { status: 'Rejected', name: 'Sophia Lin' },

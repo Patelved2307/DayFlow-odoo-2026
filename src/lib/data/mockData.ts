@@ -24,6 +24,48 @@ export const EMPLOYEE_USER: User = {
 
 export const INITIAL_EMPLOYEES: Employee[] = [
   {
+    id: 'emp-2026',
+    employeeId: 'EMP-2026',
+    name: 'Patel Ved',
+    email: 'paved2307@mail.com',
+    phone: '+1 (555) 230-7000',
+    address: '100 Innovation Park, Suite 500',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    role: 'Lead Full Stack Engineer',
+    department: 'Engineering',
+    manager: 'Eleanor Vance',
+    dateOfJoining: '2026-01-01',
+    status: 'Active',
+    todayStatus: 'Present',
+    checkInTime: '08:58 AM',
+    salary: {
+      monthlyBasic: 8500,
+      yearlyBasic: 102000,
+      allowances: {
+        hra: 3400,
+        da: 850,
+        travel: 600,
+        special: 1000,
+      },
+      deductions: {
+        pf: 1020,
+        tax: 1250,
+        insurance: 300,
+      },
+    },
+    leaveBalance: {
+      paid: 15,
+      paidTotal: 18,
+      sick: 10,
+      sickTotal: 10,
+      unpaidUsed: 0,
+    },
+    documents: [
+      { name: 'Offer_Letter_Patel_Ved.pdf', type: 'PDF', uploadedOn: '2026-01-01', size: '1.4 MB' },
+      { name: 'Tax_Declaration_W4.pdf', type: 'PDF', uploadedOn: '2026-01-02', size: '520 KB' },
+    ],
+  },
+  {
     id: 'emp-104',
     employeeId: 'DF-EMP-104',
     name: 'Ravi Sharma',
