@@ -11,15 +11,20 @@ import {
   Download,
   Clock,
   Video,
-  Layers,
-  Sparkles,
-  ChevronRight,
-  UserPlus,
   CheckCircle2,
-  FileCode2,
-  Workflow,
-  Layout,
+  AlertTriangle,
+  Users,
+  UserCheck,
+  UserX,
+  AlertCircle,
+  FileCheck2,
+  XCircle,
+  Check,
+  X,
   Zap,
+  Activity,
+  Gauge,
+  TrendingUp,
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
@@ -27,6 +32,8 @@ export const AdminDashboardPage: React.FC = () => {
     employees,
     leaveRequests,
     reminders,
+    approveLeaveRequest,
+    rejectLeaveRequest,
     setCurrentView,
     setSelectedEmployeeId,
     showToast,
@@ -34,84 +41,36 @@ export const AdminDashboardPage: React.FC = () => {
 
   const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
 
-  // Projects data matching the reference UI screenshot
-  const projectList = [
-    {
-      id: 'p-1',
-      title: 'Develop API Endpoints',
-      dueDate: 'Due date: Nov 26, 2024',
-      iconBg: 'bg-blue-100 text-blue-600',
-      icon: FileCode2,
-    },
-    {
-      id: 'p-2',
-      title: 'Onboarding Flow',
-      dueDate: 'Due date: Nov 28, 2024',
-      iconBg: 'bg-teal-100 text-teal-700',
-      icon: Workflow,
-    },
-    {
-      id: 'p-3',
-      title: 'Build Dashboard',
-      dueDate: 'Due date: Nov 30, 2024',
-      iconBg: 'bg-emerald-100 text-[#006837]',
-      icon: Layout,
-    },
-    {
-      id: 'p-4',
-      title: 'Optimize Page Load',
-      dueDate: 'Due date: Dec 5, 2024',
-      iconBg: 'bg-amber-100 text-amber-700',
-      icon: Zap,
-    },
-    {
-      id: 'p-5',
-      title: 'Cross-Browser Testing',
-      dueDate: 'Due date: Dec 6, 2024',
-      iconBg: 'bg-purple-100 text-purple-700',
-      icon: Layers,
-    },
-  ];
+  // Calculations for Row 1 & Row 2
+  const totalEmployees = employees.length;
+  const presentCount = employees.filter((e) => e.todayStatus === 'Present').length;
+  const absentCount = employees.filter((e) => e.todayStatus === 'Absent').length;
+  const emergencyHalfDayCount = employees.filter(
+    (e) => e.todayStatus === 'Half-Day' || e.todayStatus === 'Emergency Leave' || e.todayStatus === 'On Leave'
+  ).length;
 
-  // Team collaboration roster matching the reference UI screenshot
-  const teamRoster = [
-    {
-      id: 'emp-101',
-      name: 'Alexandra Deff',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      task: 'Working on Github Project Repository',
-      status: 'Completed',
-      statusClass: 'bg-emerald-100 text-[#006837]',
-    },
-    {
-      id: 'emp-102',
-      name: 'Edwin Adenike',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-      task: 'Working on Integrate User Authentication System',
-      status: 'In Progress',
-      statusClass: 'bg-amber-100 text-amber-800',
-    },
-    {
-      id: 'emp-103',
-      name: 'Isaac Oluwatemilorun',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-      task: 'Working on Develop Search and Filter Functionality',
-      status: 'Pending',
-      statusClass: 'bg-rose-100 text-rose-700',
-    },
-    {
-      id: 'emp-104',
-      name: 'David Oshodi',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
-      task: 'Working on Responsive Layout for Homepage',
-      status: 'In Progress',
-      statusClass: 'bg-amber-100 text-amber-800',
-    },
-  ];
+  const totalRequests = leaveRequests.length;
+  const approvedRequests = leaveRequests.filter((r) => r.status === 'Approved').length;
+  const rejectedRequests = leaveRequests.filter((r) => r.status === 'Rejected').length;
+  const pendingRequests = leaveRequests.filter((r) => r.status === 'Pending').length;
+
+  // Sorted Leave Requests Queue (Emergency pinned to top)
+  const queueRequests = [...leaveRequests].sort((a, b) => {
+    if (a.isEmergency && !b.isEmergency) return -1;
+    if (!a.isEmergency && b.isEmergency) return 1;
+    return new Date(b.requestedOn).getTime() - new Date(a.requestedOn).getTime();
+  });
+
+  const handleInlineAction = async (id: string, newStatus: 'Approved' | 'Rejected') => {
+    if (newStatus === 'Approved') {
+      approveLeaveRequest(id, 'Approved from Admin Control Tower');
+    } else {
+      rejectLeaveRequest(id, 'Rejected from Admin Control Tower');
+    }
+  };
 
   const handleStartMeeting = async () => {
     showToast('Connecting to company video conference...', 'info');
-    // Dispatch automated email invitation to team
     await sendAutomatedEmail({
       to: 'team@nexawork.com',
       subject: 'Meeting Invitation: Weekly All-Hands & Policy Sync',
@@ -122,19 +81,22 @@ export const AdminDashboardPage: React.FC = () => {
         host: 'Eleanor Vance (HR Operations)',
       },
     });
-    showToast('Meeting invitation email automatically sent to team members!', 'success');
+    showToast('Meeting invitation email automatically dispatched to team!', 'success');
   };
 
   return (
     <div className="space-y-6">
-      {/* Top Header matching reference screenshot */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight">
-            Dashboard
+          <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight flex items-center gap-2">
+            <span>Admin Control Tower</span>
+            <span className="rounded-full bg-emerald-100 text-[#006837] text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider">
+              Org-Wide Overview
+            </span>
           </h1>
           <p className="text-xs text-[#6B7280] mt-1">
-            Plan, prioritize, and accomplish your tasks with ease.
+            Real-time workforce attendance, emergency leave queues, and automated operations.
           </p>
         </div>
 
@@ -144,60 +106,101 @@ export const AdminDashboardPage: React.FC = () => {
             className="inline-flex items-center gap-2 rounded-xl bg-[#006837] hover:bg-[#05522C] px-4 py-2.5 text-xs font-bold text-white shadow-2xs transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4 text-emerald-300" />
-            <span>Add Project</span>
+            <span>+ Add Employee</span>
           </button>
           <button
-            onClick={() => {
-              showToast('Exporting workforce summary report (CSV)...', 'success');
-            }}
+            onClick={() => showToast('Exporting org-wide operations summary (CSV)...', 'success')}
             className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 px-4 py-2.5 text-xs font-bold text-[#1C1F1E] shadow-2xs transition-all cursor-pointer"
           >
             <Download className="w-4 h-4 text-gray-500" />
-            <span>Import Data</span>
+            <span>Export Report</span>
           </button>
         </div>
       </div>
 
-      {/* Row 1 — 4 Featured Metric Cards (Exact Reference Design) */}
+      {/* Row 1 — Top Stat Cards (Deep-links to relevant pages) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Total Projects"
-          value={24}
-          subValue="Increased from last month"
+          title="Total Employees"
+          value={totalEmployees}
+          subValue="Active workforce roster"
           isPrimary={true}
           onClick={() => setCurrentView('admin-employees')}
         />
         <MetricCard
-          title="Ended Projects"
-          value={10}
-          subValue="Increased from last month"
+          title="Present Today"
+          value={presentCount}
+          subValue="On-site & remote active"
           onClick={() => setCurrentView('admin-attendance')}
         />
         <MetricCard
-          title="Running Projects"
-          value={12}
-          subValue="Increased from last month"
-          onClick={() => setCurrentView('admin-leave-requests')}
+          title="Absent Today"
+          value={absentCount}
+          subValue="Unexcused or missing check-in"
+          onClick={() => setCurrentView('admin-attendance')}
         />
-        <MetricCard
-          title="Pending Project"
-          value={2}
-          subValue="On Discuss"
+        {/* On Half-Day / Emergency Leave Card with Amber Accent */}
+        <div
           onClick={() => setCurrentView('admin-leave-requests')}
-        />
+          className="rounded-2xl bg-amber-500 text-white p-5 border border-amber-600 shadow-sm cursor-pointer transition-all hover:scale-[1.02] flex flex-col justify-between"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-amber-100">
+              On Half-Day / Emergency
+            </span>
+            <AlertTriangle className="w-5 h-5 text-amber-200" />
+          </div>
+
+          <div className="mt-3">
+            <div className="font-display font-extrabold text-3xl">{emergencyHalfDayCount}</div>
+            <div className="text-xs text-amber-100 mt-1 flex items-center gap-1">
+              <span>Emergency logged & active</span>
+              <span>↗</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Row 2 — 3 Column Grid: Project Analytics (left), Reminders Meeting Card (middle), Project List (right) */}
+      {/* Row 2 — Requests Strip (Total · Approved · Rejected · Pending this month) */}
+      <div className="rounded-2xl bg-white p-4 border border-gray-200 shadow-2xs flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <FileCheck2 className="w-5 h-5 text-[#006837]" />
+          <span className="text-xs font-bold text-[#1C1F1E] uppercase tracking-wider">
+            Monthly Time-Off Ledger
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full sm:w-auto">
+          <div className="text-center sm:text-left">
+            <div className="text-[10px] text-gray-400 uppercase font-semibold">Total Requests</div>
+            <div className="text-base font-bold text-[#1C1F1E] font-mono">{totalRequests}</div>
+          </div>
+          <div className="text-center sm:text-left">
+            <div className="text-[10px] text-emerald-600 uppercase font-semibold">Approved</div>
+            <div className="text-base font-bold text-[#006837] font-mono">{approvedRequests}</div>
+          </div>
+          <div className="text-center sm:text-left">
+            <div className="text-[10px] text-rose-600 uppercase font-semibold">Rejected</div>
+            <div className="text-base font-bold text-rose-600 font-mono">{rejectedRequests}</div>
+          </div>
+          <div className="text-center sm:text-left">
+            <div className="text-[10px] text-amber-600 uppercase font-semibold">Pending Review</div>
+            <div className="text-base font-bold text-amber-600 font-mono">{pendingRequests}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3 — 3-Column Grid: Attendance Analytics, Reminders, Leave Requests Queue */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left (5 cols): Project Analytics Bar Chart */}
+        {/* Left (5 cols): Attendance Analytics Bar Chart */}
         <div className="lg:col-span-5">
           <ProjectAnalyticsChart />
         </div>
 
-        {/* Middle (3 cols): Reminders & Meeting Card */}
+        {/* Middle (3 cols): Reminders & Probation/Contract Alerts */}
         <div className="lg:col-span-3 rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between">
           <div>
-            <span className="text-xs font-semibold text-[#6B7280]">Reminders</span>
+            <span className="text-xs font-semibold text-[#6B7280]">Compliance Reminders</span>
             <h3 className="font-display font-bold text-base text-[#1C1F1E] mt-3">
               Meeting with Arc Company
             </h3>
@@ -217,126 +220,184 @@ export const AdminDashboardPage: React.FC = () => {
 
           <div className="mt-6 pt-4 border-t border-gray-100 space-y-2">
             <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              Upcoming Action
+              Contract & Probation Alerts
             </div>
-            {reminders.slice(0, 2).map((item) => (
+            {reminders.slice(0, 3).map((item) => (
               <div key={item.id} className="text-xs text-[#1C1F1E] flex items-center justify-between py-1">
                 <span className="truncate pr-2">{item.title}</span>
-                <span className="font-mono text-[10px] text-gray-400 shrink-0">{item.date}</span>
+                <span className="font-mono text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">
+                  {item.date}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right (4 cols): Project List with Icons and Due Dates */}
+        {/* Right (4 cols): Leave Requests Queue (Inline Approve/Reject, Emergency Pinned) */}
         <div className="lg:col-span-4 rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-bold text-base text-[#1C1F1E]">
-                  Project
-                </h3>
-                <p className="text-xs text-[#6B7280]">Active workforce deliverables</p>
-              </div>
-              <button
-                onClick={() => setIsAddEmployeeOpen(true)}
-                className="inline-flex items-center gap-1 rounded-lg bg-gray-100 hover:bg-gray-200 px-2.5 py-1 text-xs font-semibold text-[#1C1F1E] transition-colors cursor-pointer"
-              >
-                <span>+ New</span>
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {projectList.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <div
-                    key={item.id}
-                    className="p-2.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-between gap-3 cursor-pointer group"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.iconBg}`}>
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-bold text-xs text-[#1C1F1E] truncate">
-                          {item.title}
-                        </div>
-                        <div className="text-[11px] text-gray-400 truncate">
-                          {item.dueDate}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Row 3 — Bottom 3-Column Layout: Team Collaboration, Project Progress, Time Tracker */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left (5 cols): Team Collaboration List */}
-        <div className="lg:col-span-5 rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div>
                 <h3 className="font-display font-bold text-base text-[#1C1F1E]">
-                  Team Collaboration
+                  Leave Requests Queue
                 </h3>
-                <p className="text-xs text-[#6B7280]">Real-time member status</p>
+                <p className="text-xs text-[#6B7280]">Emergency pinned to top</p>
               </div>
               <button
-                onClick={() => setIsAddEmployeeOpen(true)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-[#006837] bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                onClick={() => setCurrentView('admin-leave-requests')}
+                className="text-xs font-bold text-[#006837] hover:underline"
               >
-                <span>+ Add Member</span>
+                View All →
               </button>
             </div>
 
-            <div className="mt-4 space-y-3">
-              {teamRoster.map((member) => (
+            <div className="mt-4 space-y-3 max-h-[300px] overflow-y-auto pr-1">
+              {queueRequests.slice(0, 4).map((req) => (
                 <div
-                  key={member.id}
-                  onClick={() => {
-                    setSelectedEmployeeId(member.id);
-                    setCurrentView('admin-employee-profile');
-                  }}
-                  className="flex items-center justify-between p-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                  key={req.id}
+                  className={`p-3 rounded-xl border transition-all ${
+                    req.isEmergency
+                      ? 'bg-amber-50 border-amber-300'
+                      : 'bg-white border-gray-100 hover:border-gray-200'
+                  }`}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="w-9 h-9 rounded-full object-cover border border-gray-200 shrink-0"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="min-w-0">
-                      <div className="font-bold text-xs text-[#1C1F1E] truncate">{member.name}</div>
-                      <div className="text-[11px] text-[#6B7280] truncate">
-                        {member.task}
-                      </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-[#1C1F1E]">{req.employeeName}</span>
+                      {req.isEmergency && (
+                        <span className="rounded-full bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
+                          Emergency
+                        </span>
+                      )}
                     </div>
+                    <span className="text-[10px] font-mono text-gray-400">{req.daysCount} Day(s)</span>
                   </div>
 
-                  <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold shrink-0 ${member.statusClass}`}>
-                    {member.status}
-                  </span>
+                  <div className="text-[11px] text-[#6B7280] mt-1 line-clamp-1">{req.reason}</div>
+
+                  {req.status === 'Pending' ? (
+                    <div className="flex items-center gap-2 mt-2.5">
+                      <button
+                        onClick={() => handleInlineAction(req.id, 'Approved')}
+                        className="flex-1 py-1 rounded-lg bg-[#006837] hover:bg-[#05522C] text-white text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Check className="w-3 h-3 text-emerald-300" />
+                        <span>Approve</span>
+                      </button>
+                      <button
+                        onClick={() => handleInlineAction(req.id, 'Rejected')}
+                        className="flex-1 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                        <span>Reject</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-2 text-[10px] font-bold flex items-center gap-1 text-gray-500">
+                      <span>Status:</span>
+                      <span
+                        className={
+                          req.status === 'Approved'
+                            ? 'text-emerald-700 font-bold'
+                            : req.status === 'Rejected'
+                            ? 'text-rose-700 font-bold'
+                            : 'text-amber-700 font-bold'
+                        }
+                      >
+                        {req.status}
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Middle (3 cols): Project Progress Arc Gauge */}
+      {/* Row 4 — 3-Column Layout: Activity Feed, Today's Attendance Speedometer, HR Overhead Meter */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Left (5 cols): Recent Employee Activity Feed */}
+        <div className="lg:col-span-5 rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            <div>
+              <h3 className="font-display font-bold text-base text-[#1C1F1E] flex items-center gap-2">
+                <Activity className="w-4 h-4 text-[#006837]" />
+                <span>Recent Employee Activity</span>
+              </h3>
+              <p className="text-xs text-[#6B7280]">Live system check-ins and logs</p>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {employees.slice(0, 4).map((emp) => (
+              <div
+                key={emp.id}
+                onClick={() => {
+                  setSelectedEmployeeId(emp.id);
+                  setCurrentView('admin-employee-profile');
+                }}
+                className="flex items-center justify-between p-2.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <img
+                    src={emp.avatar}
+                    alt={emp.name}
+                    className="w-9 h-9 rounded-full object-cover border border-gray-200 shrink-0"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="min-w-0">
+                    <div className="font-bold text-xs text-[#1C1F1E] truncate">{emp.name}</div>
+                    <div className="text-[11px] text-[#6B7280] truncate">
+                      Checked in at {emp.checkInTime || '09:00 AM'} ({emp.department})
+                    </div>
+                  </div>
+                </div>
+
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold shrink-0 ${
+                    emp.todayStatus === 'Present'
+                      ? 'bg-emerald-100 text-[#006837]'
+                      : emp.todayStatus === 'Absent'
+                      ? 'bg-rose-100 text-rose-700'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  {emp.todayStatus}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Middle (3 cols): Today's Attendance Speedometer */}
         <div className="lg:col-span-3">
           <ProjectProgressGauge />
         </div>
 
-        {/* Right (4 cols): Time Tracker Widget */}
-        <div className="lg:col-span-4">
-          <TimeTrackerWidget />
+        {/* Right (4 cols): HR Overhead Reduction Meter (Dark Green Card) */}
+        <div className="lg:col-span-4 rounded-2xl bg-[#006837] text-white p-6 border border-emerald-900 shadow-md flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">
+                HR Overhead Reduction Meter
+              </span>
+              <TrendingUp className="w-5 h-5 text-emerald-300" />
+            </div>
+
+            <h3 className="font-display font-extrabold text-4xl mt-4 text-white">
+              142 <span className="text-lg font-normal text-emerald-200">hrs saved</span>
+            </h3>
+
+            <p className="text-xs text-emerald-100 leading-relaxed mt-2">
+              Automated leave resolution, conflict-aware approvals, and instant emergency logging reduced manual HR admin overhead by <strong className="text-white">68%</strong> this month.
+            </p>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-emerald-800/80 flex items-center justify-between text-xs text-emerald-200">
+            <span>Next Payroll Sync</span>
+            <span className="font-mono font-bold text-white">Nov 30, 2024</span>
+          </div>
         </div>
       </div>
 
