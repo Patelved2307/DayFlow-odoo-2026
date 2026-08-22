@@ -12,13 +12,13 @@ export const ADMIN_USER: User = {
 };
 
 export const EMPLOYEE_USER: User = {
-  id: 'usr-emp-104',
-  name: 'Ravi Sharma',
-  email: 'ravi.sharma@dayflow.work',
+  id: 'usr-emp-2026',
+  name: 'Patel Ved',
+  email: 'paved2307@gmail.com',
   role: 'employee',
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  employeeId: 'DF-EMP-104',
-  designation: 'Senior Frontend Engineer',
+  employeeId: 'EMP-2026',
+  designation: 'Lead Full Stack Engineer',
   department: 'Engineering',
 };
 
@@ -27,7 +27,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     id: 'emp-2026',
     employeeId: 'EMP-2026',
     name: 'Patel Ved',
-    email: 'paved2307@mail.com',
+    email: 'paved2307@gmail.com',
     phone: '+1 (555) 230-7000',
     address: '100 Innovation Park, Suite 500',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
