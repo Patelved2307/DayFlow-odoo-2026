@@ -119,16 +119,16 @@ export const LandingPage: React.FC = () => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => login('employee')}
-              className="rounded-xl border border-gray-300 hover:border-gray-400 bg-white px-3.5 py-2 text-xs font-semibold text-[#1C1F1E] transition-colors cursor-pointer"
+              onClick={() => setCurrentView('auth')}
+              className="rounded-xl border border-gray-300 hover:border-gray-400 bg-white px-4 py-2 text-xs font-semibold text-[#1C1F1E] transition-colors cursor-pointer"
             >
-              Demo Staff Login
+              Login
             </button>
             <button
-              onClick={() => login('admin')}
-              className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-4 py-2 text-xs font-bold text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+              onClick={() => setCurrentView('auth')}
+              className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-4.5 py-2 text-xs font-bold text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <span>Launch Admin Portal</span>
+              <span>Sign Up</span>
               <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
             </button>
           </div>
@@ -155,17 +155,17 @@ export const LandingPage: React.FC = () => {
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
-                onClick={() => login('admin')}
+                onClick={() => setCurrentView('auth')}
                 className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all cursor-pointer flex items-center gap-2"
               >
-                <span>Enter Admin Dashboard</span>
+                <span>Login</span>
                 <ArrowRight className="w-4 h-4 text-emerald-300" />
               </button>
               <button
-                onClick={() => login('employee')}
+                onClick={() => setCurrentView('auth')}
                 className="rounded-xl border border-gray-300 bg-white hover:bg-gray-50 px-6 py-3.5 text-sm font-semibold text-[#1C1F1E] transition-colors cursor-pointer shadow-2xs"
               >
-                Enter Employee Portal
+                Sign Up
               </button>
             </div>
 
