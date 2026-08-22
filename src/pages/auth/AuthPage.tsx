@@ -64,7 +64,20 @@ export const AuthPage: React.FC = () => {
     if (isAdmin) {
       login('admin');
     } else {
-      login('employee');
+      if (email.includes('paved') || employeeId === '2026' || employeeId === 'EMP-2026') {
+        login('employee', {
+          id: 'usr-2026',
+          name: 'Patel Ved',
+          email: 'paved2307@mail.com',
+          role: 'employee',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          employeeId: 'EMP-2026',
+          designation: 'Lead Full Stack Engineer',
+          department: 'Engineering',
+        });
+      } else {
+        login('employee');
+      }
     }
   };
 
@@ -165,8 +178,19 @@ export const AuthPage: React.FC = () => {
 
     setIsLoading(false);
     // 6. Registration Approved
+    const registeredUser = {
+      id: 'usr-' + cleanEmpId,
+      name: profile.name,
+      email: userEmail,
+      role: 'employee' as const,
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      employeeId: cleanEmpId.startsWith('EMP') || cleanEmpId.startsWith('DF') ? cleanEmpId : `EMP-${cleanEmpId}`,
+      designation: 'Lead Full Stack Engineer',
+      department: 'Engineering',
+    };
+
     showToast(`Account successfully registered for ${profile.name}! Triggered trg_new_employee_init in Supabase (15 Paid, 10 Sick, 5 Unpaid leave initialized). Welcome email sent!`, 'success');
-    login('employee');
+    login('employee', registeredUser);
   };
 
   return (

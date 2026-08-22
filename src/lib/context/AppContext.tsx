@@ -55,7 +55,7 @@ interface AppContextType {
   setCurrentView: (view: AppView) => void;
   selectedEmployeeId: string | null;
   setSelectedEmployeeId: (id: string | null) => void;
-  login: (role: UserRole) => void;
+  login: (role: UserRole, customUser?: User) => void;
   logout: () => void;
   switchRole: (role: UserRole) => void;
   
@@ -241,15 +241,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActivities((prev) => [newActivity, ...prev.slice(0, 15)]);
   };
 
-  const login = (role: UserRole) => {
+  const login = (role: UserRole, customUser?: User) => {
     if (role === 'admin') {
       setCurrentUser(ADMIN_USER);
       setCurrentView('admin-dashboard');
       showToast('Signed in as HR Administrator (Eleanor Vance)', 'success');
     } else {
-      setCurrentUser(EMPLOYEE_USER);
+      const userToSet = customUser || EMPLOYEE_USER;
+      setCurrentUser(userToSet);
       setCurrentView('emp-dashboard');
-      showToast('Signed in as Employee (Ravi Sharma)', 'success');
+      showToast(`Signed in as ${userToSet.name}`, 'success');
     }
   };
 
