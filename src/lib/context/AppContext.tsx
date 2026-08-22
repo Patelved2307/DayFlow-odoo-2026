@@ -113,9 +113,9 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Start on landing page by default or restore from state
-  const [currentUser, setCurrentUser] = useState<User | null>(ADMIN_USER);
-  const [currentView, setCurrentView] = useState<AppView>('admin-dashboard');
+  // Start on landing page by default until user clicks Login/Sign Up and authenticates
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentView, setCurrentView] = useState<AppView>('landing');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>('emp-104');
   
   const [employees, setEmployees] = useState<Employee[]>(() => {
