@@ -18,6 +18,7 @@ import { EmployeeProfilePage as AdminEmployeeProfilePage } from './pages/admin/E
 import { AttendanceRecordsPage } from './pages/admin/AttendanceRecordsPage';
 import { LeaveRequestsPage } from './pages/admin/LeaveRequestsPage';
 import { PayrollOverviewPage } from './pages/admin/PayrollOverviewPage';
+import { InterviewBoardPage } from './pages/admin/InterviewBoardPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 
 // Employee Pages
@@ -56,6 +57,8 @@ export default function App() {
         return <LeaveRequestsPage />;
       case 'admin-payroll':
         return <PayrollOverviewPage />;
+      case 'admin-recruitment':
+        return <InterviewBoardPage />;
       case 'admin-settings':
         return <AdminSettingsPage />;
 

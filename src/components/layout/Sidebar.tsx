@@ -52,6 +52,15 @@ export const Sidebar: React.FC = () => {
   ];
 
   const generalNavItems = [
+    ...(isAdmin
+      ? [
+          {
+            id: 'admin-recruitment',
+            label: 'Recruitment',
+            icon: Users,
+          },
+        ]
+      : []),
     {
       id: isAdmin ? 'admin-settings' : 'emp-settings',
       label: 'Settings',

@@ -34,6 +34,7 @@ export type AppView =
   | 'admin-attendance'
   | 'admin-leave-requests'
   | 'admin-payroll'
+  | 'admin-recruitment'
   | 'admin-settings'
   | 'emp-dashboard'
   | 'emp-profile'
