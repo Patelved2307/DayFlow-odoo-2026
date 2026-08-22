@@ -1,0 +1,82 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React from 'react';
+import { useApp } from './lib/context/AppContext';
+import { PageShell } from './components/layout/PageShell';
+
+// Public Pages
+import { LandingPage } from './pages/landing/LandingPage';
+import { AuthPage } from './pages/auth/AuthPage';
+
+// Admin Pages
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { EmployeeDirectoryPage } from './pages/admin/EmployeeDirectoryPage';
+import { EmployeeProfilePage as AdminEmployeeProfilePage } from './pages/admin/EmployeeProfilePage';
+import { AttendanceRecordsPage } from './pages/admin/AttendanceRecordsPage';
+import { LeaveRequestsPage } from './pages/admin/LeaveRequestsPage';
+import { PayrollOverviewPage } from './pages/admin/PayrollOverviewPage';
+import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
+
+// Employee Pages
+import { EmployeeDashboardPage } from './pages/employee/EmployeeDashboardPage';
+import { EmployeeProfilePage } from './pages/employee/EmployeeProfilePage';
+import { PersonalAttendancePage } from './pages/employee/PersonalAttendancePage';
+import { LeaveTimeOffPage } from './pages/employee/LeaveTimeOffPage';
+import { PayslipPage } from './pages/employee/PayslipPage';
+import { EmployeeSettingsPage } from './pages/employee/EmployeeSettingsPage';
+
+export default function App() {
+  const { currentView } = useApp();
+
+  // Public Full-Page Views
+  if (currentView === 'landing') {
+    return <LandingPage />;
+  }
+
+  if (currentView === 'auth') {
+    return <AuthPage />;
+  }
+
+  // Render Role-Based Pages inside PageShell
+  const renderAppContent = () => {
+    switch (currentView) {
+      // Admin Views
+      case 'admin-dashboard':
+        return <AdminDashboardPage />;
+      case 'admin-employees':
+        return <EmployeeDirectoryPage />;
+      case 'admin-employee-profile':
+        return <AdminEmployeeProfilePage />;
+      case 'admin-attendance':
+        return <AttendanceRecordsPage />;
+      case 'admin-leave-requests':
+        return <LeaveRequestsPage />;
+      case 'admin-payroll':
+        return <PayrollOverviewPage />;
+      case 'admin-settings':
+        return <AdminSettingsPage />;
+
+      // Employee Views
+      case 'emp-dashboard':
+        return <EmployeeDashboardPage />;
+      case 'emp-profile':
+        return <EmployeeProfilePage />;
+      case 'emp-attendance':
+        return <PersonalAttendancePage />;
+      case 'emp-leave':
+        return <LeaveTimeOffPage />;
+      case 'emp-payslips':
+        return <PayslipPage />;
+      case 'emp-settings':
+        return <EmployeeSettingsPage />;
+
+      default:
+        return <LandingPage />;
+    }
+  };
+
+  return <PageShell>{renderAppContent()}</PageShell>;
+}

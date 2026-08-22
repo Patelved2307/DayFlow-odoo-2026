@@ -1,0 +1,6 @@
+{
+  "name": "DayFlow",
+  "description": "Every workday, perfectly aligned. Modern HR & workforce management with attendance tracking, emergency leave, payroll calculations, and role-based portals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
