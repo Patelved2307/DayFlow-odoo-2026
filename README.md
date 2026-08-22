@@ -13,7 +13,6 @@ An enterprise-grade, high-performance Human Resource Management System (HRMS) bu
 [![Vite](https://img.shields.io/badge/Vite-6.4-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -224,8 +223,3 @@ erDiagram
 
 ---
 
-## 📄 License & Acknowledgments
-
-Built for the **Odoo x NIMI Hackathon 2026**.
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
