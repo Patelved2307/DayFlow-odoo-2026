@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../lib/context/AppContext';
-import { ArrowRight, Lock, Mail, User, Shield, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Lock, Mail, User, Shield, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { NexaWorkLogo } from '../../components/layout/NexaWorkLogo';
 import { usePasswordStrength } from '../../hooks/usePasswordStrength';
 import { PasswordStrengthMeter } from '../../components/ui/PasswordStrengthMeter';
@@ -84,12 +84,27 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F6F5] flex flex-col justify-center items-center p-6 text-[#1C1F1E]">
+    <div className="min-h-screen bg-[#F4F6F5] flex flex-col justify-center items-center p-6 text-[#1C1F1E] relative">
       <div className="w-full max-w-md space-y-6">
+        {/* Prominent Top Back Button */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setCurrentView('landing')}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 text-xs font-bold text-[#1C1F1E] shadow-2xs transition-all cursor-pointer group"
+          >
+            <ArrowLeft className="w-4 h-4 text-gray-500 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Back to Home</span>
+          </button>
+
+          <span className="text-xs font-semibold text-gray-400">
+            {isSignUp ? 'Registration Gate' : 'Workspace Sign-In'}
+          </span>
+        </div>
+
         {/* Official NexaWork Logo */}
         <div
           onClick={() => setCurrentView('landing')}
-          className="flex flex-col items-center cursor-pointer group"
+          className="flex flex-col items-center cursor-pointer group py-2"
         >
           <NexaWorkLogo size="xl" showTagline={true} />
         </div>
@@ -103,7 +118,7 @@ export const AuthPage: React.FC = () => {
                 setIsSignUp(false);
                 setGateError(null);
               }}
-              className={`flex-1 py-2 rounded-lg transition-all ${
+              className={`flex-1 py-2 rounded-lg transition-all cursor-pointer ${
                 !isSignUp ? 'bg-white text-[#1C1F1E] shadow-2xs font-bold' : 'text-[#6B7280]'
               }`}
             >
@@ -114,7 +129,7 @@ export const AuthPage: React.FC = () => {
                 setIsSignUp(true);
                 setGateError(null);
               }}
-              className={`flex-1 py-2 rounded-lg transition-all ${
+              className={`flex-1 py-2 rounded-lg transition-all cursor-pointer ${
                 isSignUp ? 'bg-white text-[#1C1F1E] shadow-2xs font-bold' : 'text-[#6B7280]'
               }`}
             >
@@ -310,6 +325,17 @@ export const AuthPage: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Bottom Back Button Link */}
+        <div className="text-center">
+          <button
+            onClick={() => setCurrentView('landing')}
+            className="text-xs text-[#6B7280] hover:text-[#1C1F1E] font-semibold flex items-center justify-center gap-1 mx-auto transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to NexaWork Overview</span>
+          </button>
         </div>
       </div>
     </div>
