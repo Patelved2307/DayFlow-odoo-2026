@@ -29,6 +29,8 @@ export const AuthPage: React.FC = () => {
     COEDELKOLH00509: { status: 'Pending', name: 'Marcus Vance' },
     COEDELKOLH00510: { status: 'Rejected', name: 'Sophia Lin' },
     'DF-EMP-104': { status: 'Approved', name: 'Ravi Sharma' },
+    'INT-KOL-2026-00045': { status: 'Approved', name: 'Sarah Jenkins' },
+    'INT-KOL-2026-00046': { status: 'Approved', name: 'Daniel Miller' },
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
