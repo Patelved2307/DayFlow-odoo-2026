@@ -13,102 +13,99 @@ export const NexaWorkLogo: React.FC<NexaWorkLogoProps> = ({
   showTagline = true,
   variant = 'dark',
 }) => {
-  const iconSizes = {
-    sm: 'w-7 h-7',
-    md: 'w-10 h-10',
-    lg: 'w-12 h-12',
-    xl: 'w-16 h-16',
+  const heights = {
+    sm: 'h-8',
+    md: 'h-11',
+    lg: 'h-14',
+    xl: 'h-18',
   };
 
-  const textSizes = {
-    sm: 'text-lg',
-    md: 'text-2xl',
-    lg: 'text-3xl',
-    xl: 'text-4xl',
-  };
-
-  const taglineSizes = {
-    sm: 'text-[7px]',
-    md: 'text-[8.5px]',
-    lg: 'text-[10px]',
-    xl: 'text-[11.5px]',
-  };
-
-  const textColorNexa =
-    variant === 'white'
-      ? 'text-white'
-      : 'text-[#1C2522]';
-
-  const textColorWork =
-    variant === 'white'
-      ? 'text-emerald-300'
-      : 'text-[#006837]';
-
-  const taglineColor =
-    variant === 'white'
-      ? 'text-emerald-200 font-bold'
-      : 'text-[#1C2522] font-extrabold';
-
-  const lineColor =
-    variant === 'white'
-      ? 'bg-emerald-300'
-      : 'bg-[#50C878]';
+  const nexaColor = variant === 'white' ? '#FFFFFF' : '#1C2522';
+  const workColor = variant === 'white' ? '#6EE7B7' : '#006837';
+  const taglineColor = variant === 'white' ? '#A7F3D0' : '#1C2522';
+  const lineColor = variant === 'white' ? '#6EE7B7' : '#50C878';
 
   return (
-    <div className={`flex items-center gap-3.5 select-none ${className}`}>
-      {/* Official NexaWork Exact Vector Logo Symbol */}
-      <div className={`relative shrink-0 ${iconSizes[size]} flex items-center justify-center`}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-          {/* Top-Right Outer Arc (Dark Green) */}
+    <div className={`inline-flex items-center select-none ${heights[size]} ${className}`}>
+      <svg
+        viewBox="0 0 460 110"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-full w-auto"
+      >
+        {/* Emblem Group */}
+        <g transform="translate(10, 5)">
+          {/* Outer Dark Green Circular Arc */}
           <path
-            d="M 68 32 A 76 76 0 0 1 168 118"
+            d="M 46 12 A 40 40 0 1 1 88 66"
             stroke="#006837"
-            strokeWidth="7"
+            strokeWidth="4.5"
             strokeLinecap="round"
             fill="none"
           />
 
-          {/* Bottom-Left Outer Arc (Light Mint Green) */}
+          {/* Bottom Light Mint Circular Arc */}
           <path
-            d="M 32 128 A 76 76 0 0 1 132 168"
+            d="M 22 68 A 40 40 0 0 0 78 86"
             stroke="#50C878"
-            strokeWidth="7"
+            strokeWidth="4.5"
             strokeLinecap="round"
             fill="none"
           />
 
-          {/* Inner Mint Green Dot */}
-          <circle cx="98" cy="62" r="16" fill="#50C878" />
+          {/* Inner Mint Circle Dot */}
+          <circle cx="48" cy="32" r="9" fill="#50C878" />
 
-          {/* Main 'N' Left Leg (Deep Forest Green) */}
+          {/* Main 'N' Ribbon (Deep Green) */}
           <path
-            d="M 40 125 L 75 75 C 82 65, 96 68, 102 78 L 138 135 C 146 148, 134 162, 118 152 L 72 120 C 60 112, 44 116, 40 125 Z"
+            d="M 18 64 C 18 50, 30 40, 46 56 L 65 82 C 72 90, 82 82, 82 70 C 82 54, 66 42, 48 42 C 34 42, 22 52, 18 64 Z"
             fill="#006837"
           />
 
-          {/* Main 'N' Right Fold (Vibrant Mint Green) */}
+          {/* Mint Ribbon Fold */}
           <path
-            d="M 104 82 L 152 118 C 160 124, 156 138, 142 138 L 118 108 C 110 98, 106 88, 104 82 Z"
+            d="M 46 56 C 56 42, 70 42, 78 54 L 80 58 C 84 66, 77 78, 66 78 C 56 78, 48 66, 46 56 Z"
             fill="#50C878"
           />
-        </svg>
-      </div>
+        </g>
 
-      {/* Typography & Tagline */}
-      <div className="flex flex-col justify-center min-w-0">
-        <div className="flex items-center tracking-tight font-display font-extrabold leading-none">
-          <span className={`${textSizes[size]} ${textColorNexa}`}>Nexa</span>
-          <span className={`${textSizes[size]} ${textColorWork}`}>Work</span>
-        </div>
+        {/* NexaWork Title Text */}
+        <g transform="translate(115, 52)">
+          <text
+            fontFamily="'Space Grotesk', 'Inter', system-ui, -apple-system, sans-serif"
+            fontWeight="800"
+            fontSize="46"
+            letterSpacing="-1.2"
+          >
+            <tspan fill={nexaColor}>Nexa</tspan>
+            <tspan fill={workColor}>Work</tspan>
+          </text>
+        </g>
 
+        {/* Tagline & Side Accent Lines */}
         {showTagline && (
-          <div className={`flex items-center gap-2 mt-1 tracking-[0.2em] uppercase ${taglineSizes[size]} ${taglineColor}`}>
-            <span className={`h-[2px] w-5 rounded-full shrink-0 ${lineColor}`} />
-            <span className="truncate">EVERY WORKDAY, PERFECTLY ALIGNED.</span>
-            <span className={`h-[2px] w-5 rounded-full shrink-0 ${lineColor}`} />
-          </div>
+          <g transform="translate(115, 82)">
+            {/* Left Accent Line */}
+            <rect x="0" y="-4" width="32" height="2.5" rx="1.25" fill={lineColor} />
+
+            {/* Tagline Text */}
+            <text
+              x="44"
+              y="0"
+              fontFamily="'Inter', system-ui, -apple-system, sans-serif"
+              fontWeight="800"
+              fontSize="10.5"
+              letterSpacing="2.8"
+              fill={taglineColor}
+            >
+              EVERY WORKDAY, PERFECTLY ALIGNED.
+            </text>
+
+            {/* Right Accent Line */}
+            <rect x="292" y="-4" width="32" height="2.5" rx="1.25" fill={lineColor} />
+          </g>
         )}
-      </div>
+      </svg>
     </div>
   );
 };
