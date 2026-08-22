@@ -19,14 +19,17 @@ export const NexaWorkLogo: React.FC<NexaWorkLogoProps> = ({
     xl: 'h-20',
   };
 
+  const logoSrc =
+    variant === 'white'
+      ? '/assets/nexawork-logo-white.png'
+      : '/assets/nexawork-logo.png';
+
   return (
     <div className={`inline-flex items-center select-none ${heights[size]} ${className}`}>
       <img
-        src="/assets/nexawork-logo.png"
+        src={logoSrc}
         alt="NexaWork - Every Workday, Perfectly Aligned."
-        className={`h-full w-auto object-contain transition-all ${
-          variant === 'white' ? 'brightness-0 invert' : ''
-        }`}
+        className="h-full w-auto object-contain"
         loading="eager"
       />
     </div>
