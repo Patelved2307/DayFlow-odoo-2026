@@ -10,13 +10,9 @@
 -- Enable PostgreSQL extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Clean up existing triggers, views, and tables (idempotent setup)
+-- Clean up existing views and tables with CASCADE (automatically drops dependent triggers cleanly)
 DROP VIEW IF EXISTS public.employee_payroll CASCADE;
 DROP TRIGGER IF EXISTS trg_on_supabase_auth_signup ON auth.users;
-DROP TRIGGER IF EXISTS trg_new_employee_init ON public.employees;
-DROP TRIGGER IF EXISTS trg_employees_updated ON public.employees;
-DROP TRIGGER IF EXISTS trg_leave_requests_updated ON public.leave_requests;
-DROP TRIGGER IF EXISTS trg_interview_profiles_updated ON public.interview_profiles;
 
 DROP TABLE IF EXISTS public.salary_structures CASCADE;
 DROP TABLE IF EXISTS public.leave_balances CASCADE;
