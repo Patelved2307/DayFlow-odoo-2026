@@ -18,6 +18,7 @@ import {
   useMemo,
   useRef,
   useState,
+  isValidElement,
 } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -165,7 +166,9 @@ function DockItem({ children, className, onClick }: DockItemProps) {
       aria-haspopup="true"
     >
       {Children.map(children, (child) =>
-        cloneElement(child as React.ReactElement<any>, { width, isHovered })
+        isValidElement(child)
+          ? cloneElement(child as React.ReactElement<any>, { width, isHovered })
+          : child
       )}
     </motion.div>
   );
