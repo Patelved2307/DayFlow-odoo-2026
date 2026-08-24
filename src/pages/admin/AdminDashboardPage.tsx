@@ -274,64 +274,72 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
 
             <div className="mt-4 space-y-3 max-h-[300px] overflow-y-auto pr-1">
-              {queueRequests.slice(0, 4).map((req) => (
-                <div
-                  key={req.id}
-                  className={`p-3 rounded-xl border transition-all ${
-                    req.isEmergency
-                      ? 'bg-amber-50 border-amber-300'
-                      : 'bg-white border-gray-100 hover:border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs text-[#1C1F1E]">{req.employeeName}</span>
-                      {req.isEmergency && (
-                        <span className="rounded-full bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
-                          Emergency
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] font-mono text-gray-400">{req.daysCount} Day(s)</span>
-                  </div>
-
-                  <div className="text-[11px] text-[#6B7280] mt-1 line-clamp-1">{req.reason}</div>
-
-                  {req.status === 'Pending' ? (
-                    <div className="flex items-center gap-2 mt-2.5">
-                      <button
-                        onClick={() => handleInlineAction(req.id, 'Approved')}
-                        className="flex-1 py-1 rounded-lg bg-[#006837] hover:bg-[#05522C] text-white text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                      >
-                        <Check className="w-3 h-3 text-emerald-300" />
-                        <span>Approve</span>
-                      </button>
-                      <button
-                        onClick={() => handleInlineAction(req.id, 'Rejected')}
-                        className="flex-1 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                      >
-                        <X className="w-3 h-3" />
-                        <span>Reject</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="mt-2 text-[10px] font-bold flex items-center gap-1 text-gray-500">
-                      <span>Status:</span>
-                      <span
-                        className={
-                          req.status === 'Approved'
-                            ? 'text-emerald-700 font-bold'
-                            : req.status === 'Rejected'
-                            ? 'text-rose-700 font-bold'
-                            : 'text-amber-700 font-bold'
-                        }
-                      >
-                        {req.status}
-                      </span>
-                    </div>
-                  )}
+              {queueRequests.length === 0 ? (
+                <div className="py-8 text-center text-xs text-gray-400">
+                  <FileCheck2 className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p className="font-semibold text-gray-600">No Pending Leave Requests</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">Real employee leave applications will appear here in real-time.</p>
                 </div>
-              ))}
+              ) : (
+                queueRequests.slice(0, 4).map((req) => (
+                  <div
+                    key={req.id}
+                    className={`p-3 rounded-xl border transition-all ${
+                      req.isEmergency
+                        ? 'bg-amber-50 border-amber-300'
+                        : 'bg-white border-gray-100 hover:border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-xs text-[#1C1F1E]">{req.employeeName}</span>
+                        {req.isEmergency && (
+                          <span className="rounded-full bg-amber-500 text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider">
+                            Emergency
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-mono text-gray-400">{req.daysCount} Day(s)</span>
+                    </div>
+
+                    <div className="text-[11px] text-[#6B7280] mt-1 line-clamp-1">{req.reason}</div>
+
+                    {req.status === 'Pending' ? (
+                      <div className="flex items-center gap-2 mt-2.5">
+                        <button
+                          onClick={() => handleInlineAction(req.id, 'Approved')}
+                          className="flex-1 py-1 rounded-lg bg-[#006837] hover:bg-[#05522C] text-white text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <Check className="w-3 h-3 text-emerald-300" />
+                          <span>Approve</span>
+                        </button>
+                        <button
+                          onClick={() => handleInlineAction(req.id, 'Rejected')}
+                          className="flex-1 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <X className="w-3 h-3" />
+                          <span>Reject</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mt-2 text-[10px] font-bold flex items-center gap-1 text-gray-500">
+                        <span>Status:</span>
+                        <span
+                          className={
+                            req.status === 'Approved'
+                              ? 'text-emerald-700 font-bold'
+                              : req.status === 'Rejected'
+                              ? 'text-rose-700 font-bold'
+                              : 'text-amber-700 font-bold'
+                          }
+                        >
+                          {req.status}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

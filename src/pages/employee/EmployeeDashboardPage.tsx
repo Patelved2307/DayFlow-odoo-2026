@@ -229,27 +229,35 @@ export const EmployeeDashboardPage: React.FC = () => {
             </div>
 
             <div className="mt-4 space-y-3">
-              {myLeaves.slice(0, 3).map((req) => (
-                <div key={req.id} className="p-3 rounded-xl bg-gray-50 border border-gray-100 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#1C1F1E]">{req.type}</span>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        req.status === 'Approved'
-                          ? 'bg-emerald-100 text-[#006837]'
-                          : req.status === 'Rejected'
-                          ? 'bg-rose-100 text-rose-700'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {req.status}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-gray-400 mt-1">
-                    {req.startDate} to {req.endDate} ({req.daysCount} days)
-                  </div>
+              {myLeaves.length === 0 ? (
+                <div className="py-6 text-center text-xs text-gray-400">
+                  <CalendarDays className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  <p className="font-semibold text-gray-600">No Leave Requests Logged</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">Click "Request Leave" to submit your first leave application.</p>
                 </div>
-              ))}
+              ) : (
+                myLeaves.slice(0, 3).map((req) => (
+                  <div key={req.id} className="p-3 rounded-xl bg-gray-50 border border-gray-100 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-[#1C1F1E]">{req.type}</span>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          req.status === 'Approved'
+                            ? 'bg-emerald-100 text-[#006837]'
+                            : req.status === 'Rejected'
+                            ? 'bg-rose-100 text-rose-700'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {req.status}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-gray-400 mt-1">
+                      {req.startDate} to {req.endDate} ({req.daysCount} days)
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
