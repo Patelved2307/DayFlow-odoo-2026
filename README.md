@@ -203,23 +203,277 @@ node server.js
 
 ---
 
-## 🗄️ Database Architecture & RLS Security
+## 🗄️ Database Architecture & Complete DB Schema
 
-The database runs on **Supabase PostgreSQL** with automated security triggers and Row-Level Security (RLS):
+The database runs on **Supabase PostgreSQL 15** with automated security triggers, custom PL/pgSQL validation routines, and fine-grained Row-Level Security (RLS) policies.
+
+---
+
+### 📊 Entity-Relationship (ER) Diagram
 
 ```mermaid
 erDiagram
-    interview_profiles ||--o| employees : "onboarding verification"
-    employees ||--o{ attendance_logs : "tracks daily punches"
-    employees ||--o{ leave_requests : "submits time-off"
-    employees ||--o| leave_balances : "maintains balance ledger"
-    employees ||--o| salary_structures : "defines compensation"
-    salary_structures ||--o| employee_payroll : "calculates net salary view"
+    auth_users ||--|| employees : "1-to-1 Supabase Auth Link (id)"
+    interview_profiles ||--|| employees : "1-to-1 Onboarding Gate (interview_id)"
+    employees ||--o{ attendance_logs : "1-to-Many Daily Punches (employee_id)"
+    employees ||--o{ leave_requests : "1-to-Many Time-Off Requests (employee_id)"
+    employees ||--|| leave_balances : "1-to-1 Leave Ledger (employee_id)"
+    employees ||--|| salary_structures : "1-to-1 Compensation Setup (employee_id)"
+    salary_structures ||--|| employee_payroll : "Calculates Payroll View (employee_id)"
+
+    interview_profiles {
+        string interview_id PK "Format: INT-XXX-YYYY-NNNNN"
+        string candidate_name
+        string email UK
+        string phone
+        string applied_role
+        date applied_date
+        date interview_date
+        interview_status status "Pending | Approved | Rejected"
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    employees {
+        uuid id PK, FK "References auth.users(id)"
+        string employee_id UK "Format: COEDELKOLH00508"
+        string interview_id UK, FK "References interview_profiles(interview_id)"
+        string full_name
+        string email UK
+        user_role role "ADMIN | EMPLOYEE"
+        string phone
+        text address
+        string profile_picture_url
+        string department
+        string job_role
+        string designation
+        date joining_date
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    attendance_logs {
+        uuid id PK
+        string employee_id FK "References employees(employee_id)"
+        date date
+        time check_in
+        time check_out
+        attendance_status status "Present | Absent | Half-day | Leave"
+        timestamptz created_at
+    }
+
+    leave_requests {
+        uuid id PK
+        string employee_id FK "References employees(employee_id)"
+        leave_type leave_type "Paid | Sick | Unpaid"
+        date start_date
+        date end_date
+        leave_status status "Pending | Approved | Rejected"
+        text employee_remarks
+        text admin_comments
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    leave_balances {
+        string employee_id PK, FK "References employees(employee_id)"
+        int paid_leave_balance "Default: 15"
+        int sick_leave_balance "Default: 10"
+        int unpaid_leave_balance "Default: 5"
+    }
+
+    salary_structures {
+        string employee_id PK, FK "References employees(employee_id)"
+        decimal basic_salary "Check >= 0.00"
+        int no_of_working_days "Default: 22"
+        decimal dearness_allowance_pct "Default: 5.00%"
+        decimal house_rent_allowance_pct "Default: 15.00%"
+        decimal travel_allowance_pct "Default: 10.00%"
+        decimal special_allowance_pct "Default: 10.00%"
+        decimal provident_fund_pct "Default: 12.00%"
+        decimal professional_tax "Default: 200.00"
+        timestamptz updated_at
+    }
 ```
 
-- **`handle_supabase_new_user()` Trigger**: Intercepts user registrations, verifies candidate approval status in `interview_profiles`, and auto-populates `employees`.
-- **`handle_new_employee_init()` Trigger**: Automatically seeds 15 Paid, 10 Sick, and 5 Unpaid leave balances and salary structures upon employee creation.
-- **`employee_payroll` View**: Performs live automated calculation of HRA, DA, PF, Professional Tax, and Net Take-Home Pay.
+---
+
+### 🔠 Custom ENUM Types
+
+| ENUM Name | Enum Values / Allowed Options | Purpose & Context |
+| :--- | :--- | :--- |
+| `public.user_role` | `'ADMIN'`, `'EMPLOYEE'` | Role-Based Access Control (RBAC) permissions |
+| `public.attendance_status` | `'Present'`, `'Absent'`, `'Half-day'`, `'Leave'` | Daily attendance punch state tracking |
+| `public.leave_type` | `'Paid'`, `'Sick'`, `'Unpaid'` | Categories of employee time-off requests |
+| `public.leave_status` | `'Pending'`, `'Approved'`, `'Rejected'` | HR approval workflow state |
+| `public.interview_status` | `'Pending'`, `'Approved'`, `'Rejected'` | Recruitment onboarding qualification status |
+
+---
+
+### 📋 Comprehensive Database Tables Schema
+
+#### 1. `public.interview_profiles` (Recruitment Board Registry)
+Stores prospective and interviewed candidate profiles. Registration is locked until status is `'Approved'`.
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `interview_id` | `VARCHAR(15)` | **PRIMARY KEY**, CHECK regex `^INT-[A-Z]{3}-[0-9]{4}-[0-9]{5}$` | Candidate interview registration key |
+| `candidate_name`| `VARCHAR(100)` | `NOT NULL` | Candidate's full name |
+| `email` | `VARCHAR(100)` | **UNIQUE**, `NOT NULL` | Candidate contact email |
+| `phone` | `VARCHAR(20)` | `NULLABLE` | Candidate contact phone number |
+| `applied_role` | `VARCHAR(50)` | `NOT NULL` | Role candidate applied for |
+| `applied_date` | `DATE` | `NOT NULL`, `DEFAULT CURRENT_DATE` | Application submission date |
+| `interview_date`| `DATE` | `NULLABLE` | Scheduled interview date |
+| `status` | `interview_status` | `NOT NULL`, `DEFAULT 'Pending'` | Interview process state |
+| `created_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Record creation timestamp |
+| `updated_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Last updated timestamp |
+
+---
+
+#### 2. `public.employees` (Master Employee Directory)
+Links 1-to-1 with Supabase `auth.users(id)` and verified candidate `interview_profiles`.
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `UUID` | **PRIMARY KEY**, **FK** -> `auth.users(id)` ON DELETE CASCADE | Unique Supabase Auth user link |
+| `employee_id` | `VARCHAR(15)` | **UNIQUE**, `NOT NULL`, CHECK regex `^[A-Z]{2}[A-Z]{2}[A-Z]{2}[A-Z]{3}[HE][0-9]{5}$` | Alphanumeric corporate employee ID |
+| `interview_id` | `VARCHAR(15)` | **UNIQUE**, `NOT NULL`, **FK** -> `interview_profiles(interview_id)` | Link to verified recruitment record |
+| `full_name` | `VARCHAR(100)` | `NOT NULL` | Employee full name |
+| `email` | `VARCHAR(100)` | **UNIQUE**, `NOT NULL` | Corporate email address |
+| `role` | `user_role` | `NOT NULL`, `DEFAULT 'EMPLOYEE'` | RBAC system role (`ADMIN` or `EMPLOYEE`) |
+| `phone` | `VARCHAR(20)` | `NULLABLE` | Contact phone number |
+| `address` | `TEXT` | `NULLABLE` | Physical residential address |
+| `profile_picture_url`| `VARCHAR(255)`| `NULLABLE` | Avatar image URL |
+| `department` | `VARCHAR(50)` | `NOT NULL` | Assigned department (e.g. Engineering) |
+| `job_role` | `VARCHAR(50)` | `NOT NULL` | Active job role title |
+| `designation` | `VARCHAR(50)` | `NOT NULL` | Organizational hierarchy level |
+| `joining_date` | `DATE` | `NOT NULL`, `DEFAULT CURRENT_DATE` | Official onboarding date |
+| `created_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Creation timestamp |
+| `updated_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Last updated timestamp |
+
+---
+
+#### 3. `public.attendance_logs` (Daily Attendance & Punch Ledger)
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `UUID` | **PRIMARY KEY**, `DEFAULT uuid_generate_v4()` | Unique log identifier |
+| `employee_id` | `VARCHAR(15)` | **FK** -> `employees(employee_id)` ON DELETE CASCADE | Target employee ID |
+| `date` | `DATE` | `NOT NULL`, `DEFAULT CURRENT_DATE` | Punch log date |
+| `check_in` | `TIME` | `NULLABLE` | Daily check-in timestamp |
+| `check_out` | `TIME` | `NULLABLE` | Daily check-out timestamp |
+| `status` | `attendance_status` | `NOT NULL`, `DEFAULT 'Absent'` | Punch presence status |
+| `created_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Log record creation time |
+| *Composite* | UNIQUE | `UNIQUE(employee_id, date)` | Prevents duplicate daily logs per employee |
+
+---
+
+#### 4. `public.leave_requests` (Time-Off & Emergency Leave Log)
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | `UUID` | **PRIMARY KEY**, `DEFAULT uuid_generate_v4()` | Unique request identifier |
+| `employee_id` | `VARCHAR(15)` | **FK** -> `employees(employee_id)` ON DELETE CASCADE | Target employee ID |
+| `leave_type` | `leave_type` | `NOT NULL` | Paid, Sick, or Unpaid |
+| `start_date` | `DATE` | `NOT NULL` | Leave start date |
+| `end_date` | `DATE` | `NOT NULL`, CHECK `end_date >= start_date` | Leave end date |
+| `status` | `leave_status` | `NOT NULL`, `DEFAULT 'Pending'` | Workflow approval state |
+| `employee_remarks`| `TEXT` | `NULLABLE` | Employee request justification |
+| `admin_comments` | `TEXT` | `NULLABLE` | HR / Admin response notes |
+| `created_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Request timestamp |
+| `updated_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Last updated timestamp |
+
+---
+
+#### 5. `public.leave_balances` (Employee Running Leave Ledger)
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `employee_id` | `VARCHAR(15)` | **PRIMARY KEY**, **FK** -> `employees(employee_id)` ON DELETE CASCADE | Target employee ID |
+| `paid_leave_balance` | `INT` | `NOT NULL`, `DEFAULT 15`, CHECK `>= 0` | Available paid leave days |
+| `sick_leave_balance` | `INT` | `NOT NULL`, `DEFAULT 10`, CHECK `>= 0` | Available sick leave days |
+| `unpaid_leave_balance` | `INT` | `NOT NULL`, `DEFAULT 5`, CHECK `>= 0` | Allowed unpaid leave days |
+
+---
+
+#### 6. `public.salary_structures` (Employee Compensation Setup)
+
+| Column | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `employee_id` | `VARCHAR(15)` | **PRIMARY KEY**, **FK** -> `employees(employee_id)` ON DELETE CASCADE | Target employee ID |
+| `basic_salary` | `DECIMAL(10,2)` | `NOT NULL`, `DEFAULT 0.00`, CHECK `>= 0` | Monthly base salary |
+| `no_of_working_days`| `INT` | `NOT NULL`, `DEFAULT 22`, CHECK `> 0` | Expected monthly working days |
+| `dearness_allowance_pct` | `DECIMAL(5,2)` | `NOT NULL`, `DEFAULT 5.00%`, CHECK `>= 0` | DA percentage of Basic Salary |
+| `house_rent_allowance_pct` | `DECIMAL(5,2)` | `NOT NULL`, `DEFAULT 15.00%`, CHECK `>= 0` | HRA percentage of Basic Salary |
+| `travel_allowance_pct` | `DECIMAL(5,2)` | `NOT NULL`, `DEFAULT 10.00%`, CHECK `>= 0` | TA percentage of Basic Salary |
+| `special_allowance_pct` | `DECIMAL(5,2)` | `NOT NULL`, `DEFAULT 10.00%`, CHECK `>= 0` | Special allowance % of Basic |
+| `provident_fund_pct` | `DECIMAL(5,2)` | `NOT NULL`, `DEFAULT 12.00%`, CHECK `>= 0` | PF deduction % of Basic |
+| `professional_tax` | `DECIMAL(10,2)` | `NOT NULL`, `DEFAULT 200.00`, CHECK `>= 0` | Flat professional tax deduction |
+| `updated_at` | `TIMESTAMPTZ` | `DEFAULT CURRENT_TIMESTAMP` | Last revision timestamp |
+
+---
+
+### 🧮 Automated Database Views
+
+#### `public.employee_payroll` View
+Performs live, on-the-fly math joining `salary_structures` and `employees`:
+
+$$\text{Total Allowances} = \text{Basic} \times \frac{\text{DA\%} + \text{HRA\%} + \text{TA\%} + \text{Special\%}}{100}$$
+
+$$\text{Total Deductions} = \left(\text{Basic} \times \frac{\text{PF\%}}{100}\right) + \text{Professional Tax}$$
+
+$$\text{Net Salary} = \text{Basic Salary} + \text{Total Allowances} - \text{Total Deductions}$$
+
+---
+
+### ⚡ Automated Triggers & PL/pgSQL Functions
+
+1. **`handle_supabase_new_user()` Trigger (`SECURITY DEFINER`)**:
+   - Executes AFTER `INSERT` on `auth.users`.
+   - Intercepts registration metadata (`interview_id`, `employee_id`).
+   - Validates Employee ID regex pattern (`^[A-Z]{2}[A-Z]{2}[A-Z]{2}[A-Z]{3}[HE][0-9]{5}$`).
+   - Checks candidate status in `interview_profiles`: blocks registration if profile is missing, `'Pending'`, or `'Rejected'`.
+   - On approval, automatically inserts a new record into `public.employees`.
+
+2. **`handle_new_employee_init()` Trigger**:
+   - Executes AFTER `INSERT` on `public.employees`.
+   - Automatically initializes default leave balances (15 Paid, 10 Sick, 5 Unpaid) in `leave_balances`.
+   - Initializes default base salary ($0.00) in `salary_structures` ready for HR setup.
+
+3. **`update_timestamp()` Trigger**:
+   - Automatically updates `updated_at = CURRENT_TIMESTAMP` before any update on `employees`, `leave_requests`, and `interview_profiles`.
+
+---
+
+### 🔐 Row-Level Security (RLS) Policies
+
+| Table | Policy Name | Access Scope | Condition / Check Logic |
+| :--- | :--- | :--- | :--- |
+| **`employees`** | Admins can manage all employee profiles | `ALL` | `is_admin() = true` |
+| | Employees can view their own profile | `SELECT` | `auth.uid() = id` |
+| | Employees can update limited personal info | `UPDATE` | `auth.uid() = id` (role & job details locked) |
+| **`attendance_logs`** | Admins can manage all attendance logs | `ALL` | `is_admin() = true` |
+| | Employees can view their own attendance | `SELECT` | `employee_id = current_employee_id` |
+| | Employees can log their own attendance | `INSERT` | `employee_id = current_employee_id` |
+| **`leave_requests`** | Admins can manage all leave requests | `ALL` | `is_admin() = true` |
+| | Employees can view their own requests | `SELECT` | `employee_id = current_employee_id` |
+| | Employees can submit leave requests | `INSERT` | `employee_id = current_employee_id AND status = 'Pending'` |
+| **`leave_balances`** | Admins can manage all leave balances | `ALL` | `is_admin() = true` |
+| | Employees can view their own balances | `SELECT` | `employee_id = current_employee_id` |
+| **`salary_structures`** | Admins can manage all salary structures | `ALL` | `is_admin() = true` |
+| | Employees can view their own salary | `SELECT` | `employee_id = current_employee_id` |
+| **`interview_profiles`**| Admins can manage candidate profiles | `ALL` | `is_admin() = true` (Unauthenticated blocked) |
+
+---
+
+### 🚀 Indexes & Performance Optimization
+
+- `idx_attendance_employee_date` on `public.attendance_logs (employee_id, date)`
+- `idx_leave_employee` on `public.leave_requests (employee_id)`
+- `idx_leave_status` on `public.leave_requests (status)`
+- `idx_employees_dept` on `public.employees (department)`
+- `idx_interview_status` on `public.interview_profiles (status)`
+- `idx_interview_email` on `public.interview_profiles (email)`
 
 ---
 
