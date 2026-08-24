@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FoldText } from '../../components/ui/FoldText';
 import { useApp } from '../../lib/context/AppContext';
 import { MetricCard } from '../../components/dashboard/MetricCard';
 import { ProjectAnalyticsChart } from '../../components/dashboard/ProjectAnalyticsChart';
@@ -96,8 +97,16 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight flex items-center gap-2">
-            <span>NexaWork Operations & HR Control Tower</span>
+          <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight flex flex-wrap items-center gap-2">
+            <FoldText
+              text="NexaWork Operations & HR Control Tower"
+              splitBy="word"
+              hinge="top"
+              trigger="mount"
+              duration={0.65}
+              stagger={0.04}
+              color="#1C1F1E"
+            />
             <span className="rounded-full bg-emerald-100 text-[#006837] text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider border border-emerald-200">
               Org-Wide Executive Command
             </span>

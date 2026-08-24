@@ -26,10 +26,8 @@ import {
   DollarSign,
   XCircle,
   Zap,
-  Home,
-  Lock,
 } from 'lucide-react';
-import { NavBar } from '../../components/ui/tubelight-navbar';
+import { FoldText } from '../../components/ui/FoldText';
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, login, showToast, navigateToAuth } = useApp();
@@ -69,40 +67,31 @@ export const LandingPage: React.FC = () => {
     setNewsletterEmail('');
   };
 
-  const tubelightNavItems = [
-    { name: 'Home', url: '#hero', icon: Home, onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
-    { name: 'Workday', url: '#experience', icon: Zap, onClick: () => document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }) },
-    { name: 'Impact', url: '#impact', icon: Award, onClick: () => document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' }) },
-    { name: 'Feedback', url: '#testimonials', icon: Star, onClick: () => document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' }) },
-    { name: 'Portal', url: '#auth', icon: Lock, onClick: () => navigateToAuth('signin') },
-  ];
-
   return (
     <div className="min-h-screen bg-[#F4F6F5] text-[#1C1F1E] font-sans selection:bg-emerald-200 selection:text-[#006837]">
-      {/* Unified Single Navbar with Integrated Tubelight Nav & Login/Sign Up */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-8 lg:px-12 py-2.5 shadow-2xs">
-        <div className="max-w-[1400px] mx-auto w-full flex items-center justify-between gap-4">
-          {/* Brand Logo */}
-          <div onClick={() => setCurrentView('landing')} className="cursor-pointer shrink-0">
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 lg:px-12 py-3.5">
+        <div className="max-w-[1400px] mx-auto w-full flex items-center justify-between">
+          <div onClick={() => setCurrentView('landing')} className="cursor-pointer">
             <NexaWorkLogo size="md" showTagline={true} />
           </div>
 
-          {/* Center Integrated Tubelight Navbar */}
-          <div className="flex items-center justify-center">
-            <NavBar items={tubelightNavItems} isInline={true} />
-          </div>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#6B7280]">
+            <a href="#gallery" className="hover:text-[#006837] transition-colors">Workplace Culture</a>
+            <a href="#impact" className="hover:text-[#006837] transition-colors">Impact & Stats</a>
+            <a href="#testimonials" className="hover:text-[#006837] transition-colors">Enterprise Trust</a>
+          </nav>
 
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => navigateToAuth('signin')}
-              className="rounded-full border border-gray-300 hover:border-gray-400 bg-white px-4 py-1.5 text-xs font-bold text-[#1C1F1E] transition-colors cursor-pointer shadow-2xs hover:shadow-xs"
+              className="rounded-xl border border-gray-300 hover:border-gray-400 bg-white px-4 py-2 text-xs font-semibold text-[#1C1F1E] transition-colors cursor-pointer"
             >
               Login
             </button>
             <button
               onClick={() => navigateToAuth('signup')}
-              className="rounded-full bg-[#006837] hover:bg-[#05522C] px-4.5 py-1.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
+              className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-4.5 py-2 text-xs font-bold text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
             >
               <span>Sign Up</span>
               <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
@@ -129,11 +118,19 @@ export const LandingPage: React.FC = () => {
         {/* Main Hero Content Container (Centered) */}
         <div className="relative z-10 max-w-4xl w-full mx-auto text-center space-y-8 my-auto pt-6">
           
-          {/* Centered Motion Title */}
+          {/* Centered Motion Title with 3D FoldText Animation */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.08] max-w-4xl mx-auto">
-            <WordsPullUp text="Every workday," className="inline-block text-white" />
+            <span className="block text-white">Every workday,</span>
             <span className="text-[#7EC9A0] block mt-1 sm:mt-2">
-              <WordsPullUp text="perfectly aligned." showAsterisk />
+              <FoldText
+                text="perfectly aligned."
+                splitBy="char"
+                hinge="top"
+                trigger="mount"
+                duration={0.7}
+                stagger={0.035}
+                color="#7EC9A0"
+              />
             </span>
           </h1>
 
