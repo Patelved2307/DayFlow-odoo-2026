@@ -489,7 +489,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       title: `applied for ${data.type} (${data.daysCount} days)`,
       badgeType: 'info',
     });
-    showToast(`Leave request for ${data.daysCount} days submitted and stored in database.`, 'success');
+
+    // 1. Email to HR Admin notifying of new leave request
+    sendAutomatedEmail({
+      to: 'admin@nexawork.com',
+      subject: `Action Required: New Leave Request from ${requester.name} (${data.type})`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: requester.name,
+        type: data.type,
+        daysCount: data.daysCount,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        reason: data.reason,
+        status: 'Pending HR Review',
+        adminComment: `New leave request submitted by employee ${requester.name} (${requester.employeeId}). Action required in HR Control Tower.`,
+      },
+    });
+
+    // 2. Email to Employee confirming leave request submission
+    sendAutomatedEmail({
+      to: requester.email || 'employee@nexawork.com',
+      subject: `Confirmation: Leave Request Submitted for ${data.type}`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: requester.name,
+        type: data.type,
+        daysCount: data.daysCount,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        reason: data.reason,
+        status: 'Pending HR Approval',
+        adminComment: `Your leave request has been received by HR Admin (Eleanor Vance). You will receive an update email once actioned.`,
+      },
+    });
+
+    showToast(`Leave request for ${data.daysCount} days submitted. Emails dispatched to HR & Employee!`, 'success');
   };
 
   // Emergency Half-Day Leave Submit (Instant Log - No approval gate!)
@@ -588,7 +623,41 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       badgeType: 'warning',
     });
 
-    showToast('Emergency leave logged immediately. HR and your manager have been notified.', 'warning');
+    // 1. Send Urgent Email to HR Admin
+    sendAutomatedEmail({
+      to: 'admin@nexawork.com',
+      subject: `URGENT ALERT: Emergency Half-Day Logged by ${requester.name}`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: requester.name,
+        type: 'Emergency Half-Day',
+        daysCount: 0.5,
+        startDate: todayStr,
+        endDate: todayStr,
+        reason: `[${data.category}] ${data.note}`,
+        status: 'Logged & Auto-Deducted',
+        adminComment: `Emergency leave auto-logged and marked for shift today.`,
+      },
+    });
+
+    // 2. Send Confirmation Email to Employee
+    sendAutomatedEmail({
+      to: requester.email || 'employee@nexawork.com',
+      subject: `Emergency Leave Confirmation: ${data.category}`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: requester.name,
+        type: 'Emergency Half-Day',
+        daysCount: 0.5,
+        startDate: todayStr,
+        endDate: todayStr,
+        reason: `[${data.category}] ${data.note}`,
+        status: 'Logged',
+        adminComment: `Emergency half-day registered. 0.5 paid leave balance updated in database.`,
+      },
+    });
+
+    showToast('Emergency leave logged immediately. Alerts dispatched to HR Admin & Employee!', 'warning');
   };
 
   const approveLeaveRequest = (requestId: string, comment?: string) => {
@@ -651,7 +720,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       badgeType: 'success',
     });
 
-    // Send email notification to employee
+    // 1. Send Approval Email to Employee
     const targetEmp = employees.find((e) => e.employeeId === target.employeeId || e.name === target.employeeName);
     const empEmail = targetEmp?.email || 'employee@nexawork.com';
 
@@ -667,11 +736,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         endDate: target.endDate,
         reason: target.reason,
         status: 'Approved',
+        adminComment: comment || 'Approved by HR Administrator (Eleanor Vance).',
+      },
+    });
+
+    // 2. Send Audit Log Email to HR Admin
+    sendAutomatedEmail({
+      to: 'admin@nexawork.com',
+      subject: `Audit Copy: Approved Leave Request for ${target.employeeName}`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: target.employeeName,
+        type: target.type,
+        daysCount: target.daysCount,
+        startDate: target.startDate,
+        endDate: target.endDate,
+        reason: target.reason,
+        status: 'Approved',
         adminComment: comment || 'Approved by HR Administrator.',
       },
     });
 
-    showToast(`Leave request for ${target.employeeName} approved and employee notified via email.`, 'success');
+    showToast(`Leave request for ${target.employeeName} approved. Confirmation emails sent to Employee & HR!`, 'success');
   };
 
   const rejectLeaveRequest = (requestId: string, comment?: string) => {
