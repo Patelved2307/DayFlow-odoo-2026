@@ -109,20 +109,20 @@ export const EmergencyLeaveModal: React.FC<EmergencyLeaveModalProps> = ({ isOpen
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl px-4 py-2 text-xs font-semibold text-[#6B7280] hover:bg-gray-100 transition-colors"
+              className="rounded-xl px-4 py-2.5 text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors border border-gray-200 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !note.trim()}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#F2994A] hover:bg-[#e0893b] disabled:opacity-50 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
             >
-              <Send className="w-3.5 h-3.5" />
+              <Send className="w-3.5 h-3.5 text-amber-100" />
               <span>{isSubmitting ? 'Logging Emergency...' : 'Confirm & Leave Now'}</span>
             </button>
           </div>

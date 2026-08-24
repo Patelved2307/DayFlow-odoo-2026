@@ -62,11 +62,14 @@ export const EmployeeDashboardPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight">
-            Employee Workspace
+          <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight flex items-center gap-2">
+            <span>NexaWork Workforce Command Center</span>
+            <span className="rounded-full bg-emerald-100 text-[#006837] text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider border border-emerald-200">
+              Staff Portal
+            </span>
           </h1>
           <p className="text-xs text-[#6B7280] mt-1">
-            Welcome back, {currentUser?.name || 'Ravi Sharma'} • {currentUser?.designation || 'Senior Software Engineer'}
+            Welcome back, {currentUser?.name || 'Patel Ved'} • {currentUser?.designation || 'Lead Full Stack Engineer'}
           </p>
         </div>
 

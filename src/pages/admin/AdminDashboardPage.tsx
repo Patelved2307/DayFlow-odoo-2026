@@ -97,13 +97,13 @@ export const AdminDashboardPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-3xl text-[#1C1F1E] tracking-tight flex items-center gap-2">
-            <span>Admin Control Tower</span>
-            <span className="rounded-full bg-emerald-100 text-[#006837] text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider">
-              Org-Wide Overview
+            <span>NexaWork Operations & HR Control Tower</span>
+            <span className="rounded-full bg-emerald-100 text-[#006837] text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider border border-emerald-200">
+              Org-Wide Executive Command
             </span>
           </h1>
           <p className="text-xs text-[#6B7280] mt-1">
-            Real-time workforce attendance, emergency leave queues, and automated operations.
+            Real-time workforce alignment, geofenced logs, emergency leave queues, and automated payroll management.
           </p>
         </div>
 

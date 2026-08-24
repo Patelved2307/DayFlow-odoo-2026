@@ -156,18 +156,18 @@ export const LeaveRequestModal: React.FC<LeaveRequestModalProps> = ({ isOpen, on
             <div className="text-xs text-[#6B7280]">
               Total duration: <strong className="font-mono text-[#1C1F1E]">{daysCount} Days</strong>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl px-4 py-2 text-xs font-semibold text-[#6B7280] hover:bg-gray-100 transition-colors"
+                className="rounded-xl px-4 py-2.5 text-xs font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors border border-gray-200 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || !reason.trim()}
-                className="rounded-xl bg-[#1F6D4D] hover:bg-[#144933] disabled:opacity-50 px-5 py-2 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
+                className="rounded-xl bg-[#006837] hover:bg-[#05522C] disabled:opacity-50 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Request'}
               </button>

@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
+import { AnimatedCounter } from '../common/AnimatedCounter';
+import { motion } from 'framer-motion';
 
 interface MetricCardProps {
   title: string;
@@ -16,11 +18,43 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   isPrimary = false,
   onClick,
 }) => {
+  // Parse numeric values to enable count-up animation
+  const renderValue = () => {
+    if (typeof value === 'number') {
+      return <AnimatedCounter to={value} decimals={0} />;
+    }
+
+    if (typeof value === 'string') {
+      const match = value.match(/^([\$\d\.]+)(\s*.*)$/);
+      if (match) {
+        const numPart = parseFloat(match[1].replace('$', ''));
+        const prefix = match[1].startsWith('$') ? '$' : '';
+        const suffix = match[2] || '';
+        if (!isNaN(numPart)) {
+          const decimals = match[1].includes('.') ? 1 : 0;
+          return (
+            <AnimatedCounter
+              to={numPart}
+              decimals={decimals}
+              prefix={prefix}
+              suffix={suffix}
+            />
+          );
+        }
+      }
+    }
+
+    return value;
+  };
+
   if (isPrimary) {
     return (
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 15, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4 }}
         onClick={onClick}
-        className="rounded-2xl bg-gradient-to-br from-[#006837] via-[#0A522E] to-[#05381E] p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer min-h-[140px]"
+        className="rounded-2xl bg-gradient-to-br from-[#006837] via-[#0A522E] to-[#05381E] p-6 text-white shadow-md relative overflow-hidden flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-xl cursor-pointer min-h-[140px]"
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-emerald-100/90">{title}</span>
@@ -31,7 +65,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
         <div className="my-2">
           <div className="font-display font-extrabold text-4xl tracking-tight text-white drop-shadow-2xs">
-            {value}
+            {renderValue()}
           </div>
         </div>
 
@@ -41,14 +75,17 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             <span>{subValue}</span>
           </span>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 15, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4 }}
       onClick={onClick}
-      className="rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer min-h-[140px] hover:shadow-xs"
+      className="rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-md cursor-pointer min-h-[140px]"
     >
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-[#6B7280]">{title}</span>
@@ -59,7 +96,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
       <div className="my-2">
         <div className="font-display font-extrabold text-4xl tracking-tight text-[#1C1F1E]">
-          {value}
+          {renderValue()}
         </div>
       </div>
 
@@ -73,6 +110,6 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           <span className="text-[11px] font-medium text-gray-500">{subValue}</span>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

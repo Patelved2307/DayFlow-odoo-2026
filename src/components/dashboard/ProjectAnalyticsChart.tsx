@@ -1,4 +1,6 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { BarChart3 } from 'lucide-react';
 
 export const ProjectAnalyticsChart: React.FC = () => {
   const days = [
@@ -15,40 +17,30 @@ export const ProjectAnalyticsChart: React.FC = () => {
     <div className="rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between h-full">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-display font-bold text-base text-[#1C1F1E]">
-            Project Analytics
+          <h3 className="font-display font-bold text-base text-[#1C1F1E] flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-[#006837]" />
+            <span>Workforce Weekly Velocity</span>
           </h3>
-          <p className="text-xs text-[#6B7280]">Weekly activity & velocity metrics</p>
+          <p className="text-xs text-[#6B7280]">Daily shift completion & attendance activity</p>
         </div>
       </div>
 
       <div className="relative h-44 my-4 flex items-end justify-between px-2 gap-3">
-        {/* SVG Pattern Definition for Hatched Inactive Bars */}
-        <svg className="absolute w-0 h-0" width="0" height="0">
-          <defs>
-            <pattern
-              id="hatchPattern"
-              width="10"
-              height="10"
-              patternTransform="rotate(45 0 0)"
-              patternUnits="userSpaceOnUse"
-            >
-              <line x1="0" y1="0" x2="0" y2="10" stroke="#CBD5E1" strokeWidth="3" />
-            </pattern>
-          </defs>
-        </svg>
-
         {days.map((day, idx) => (
           <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-            {/* Popover Pill for Tuesday */}
             {day.popover && (
               <div className="mb-1 bg-emerald-50 text-[#006837] text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 shadow-2xs animate-bounce">
                 {day.popover}
               </div>
             )}
 
-            {/* Column Bar */}
-            <div className="w-full relative flex flex-col justify-end" style={{ height: day.height }}>
+            {/* Column Bar with Animated Height Growth */}
+            <motion.div
+              className="w-full relative flex flex-col justify-end"
+              initial={{ height: 0 }}
+              animate={{ height: day.height }}
+              transition={{ duration: 0.8, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            >
               {day.status === 'inactive' ? (
                 <div
                   className="w-full h-full rounded-full border border-gray-200 transition-all duration-300 group-hover:scale-105"
@@ -60,11 +52,10 @@ export const ProjectAnalyticsChart: React.FC = () => {
               ) : day.status === 'primary' ? (
                 <div className="w-full h-full rounded-full bg-[#006837] transition-all duration-300 group-hover:scale-105 shadow-xs" />
               ) : (
-                <div className="w-full h-full rounded-full bg-[#34D399] transition-all duration-300 group-hover:scale-105" />
+                <div className="w-full h-full rounded-full bg-[#7EC9A0] transition-all duration-300 group-hover:scale-105" />
               )}
-            </div>
+            </motion.div>
 
-            {/* Day Label */}
             <span className="text-xs font-semibold text-gray-500">{day.label}</span>
           </div>
         ))}
