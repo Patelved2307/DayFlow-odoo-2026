@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useApp } from '../../lib/context/AppContext';
 import { NexaWorkLogo } from '../../components/layout/NexaWorkLogo';
 import { sendAutomatedEmail } from '../../lib/services/emailService';
@@ -20,17 +20,30 @@ import {
   Star,
   ExternalLink,
   ChevronRight,
-  Quote,
-  Heart,
-  Compass,
-  Lightbulb,
-  ChevronLeft,
+  Clock,
+  MapPin,
+  AlertTriangle,
+  DollarSign,
+  XCircle,
+  Zap,
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, login, showToast, navigateToAuth } = useApp();
   const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [activeQuoteIndex, setActiveQuoteIndex] = useState(0);
+  const [activeStoryStep, setActiveStoryStep] = useState<'09:00' | '01:30' | '04:00' | '06:00'>('09:00');
+  const [simulatedBasicSalary, setSimulatedBasicSalary] = useState<number>(6500);
+
+  // Live payroll math calculations for interactive simulator
+  const hra = Math.round(simulatedBasicSalary * 0.15);
+  const da = Math.round(simulatedBasicSalary * 0.05);
+  const ta = Math.round(simulatedBasicSalary * 0.10);
+  const special = Math.round(simulatedBasicSalary * 0.10);
+  const totalAllowances = hra + da + ta + special;
+  const pf = Math.round(simulatedBasicSalary * 0.12);
+  const tax = 200;
+  const totalDeductions = pf + tax;
+  const netTakeHome = simulatedBasicSalary + totalAllowances - totalDeductions;
 
   const galleryImages = [
     {
@@ -83,67 +96,10 @@ export const LandingPage: React.FC = () => {
     },
   ];
 
-  const visionaryQuotes = [
-    {
-      id: 'q-1',
-      quote: "Clients do not come first. Employees come first. If you take care of your employees, they will take care of the clients.",
-      author: "Sir Richard Branson",
-      title: "Founder, Virgin Group",
-      category: "Workforce Philosophy",
-      tag: "People First",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: 'q-2',
-      quote: "A team is not a group of people who work together. A team is a group of people who trust each other.",
-      author: "Simon Sinek",
-      title: "Author & Organisational Thinker",
-      category: "Culture & Trust",
-      tag: "Radical Trust",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: 'q-3',
-      quote: "Great things in business are never done by one person. They're done by a team of people aligned around a shared vision.",
-      author: "Steve Jobs",
-      title: "Co-Founder, Apple",
-      category: "Leadership Alignment",
-      tag: "Team Synergy",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: 'q-4',
-      quote: "Efficiency is doing things right; effectiveness is doing the right things for your people.",
-      author: "Peter Drucker",
-      title: "Father of Modern Management",
-      category: "Operational Excellence",
-      tag: "Frictionless HR",
-      avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80",
-    },
-  ];
-
-  const manifestoPillars = [
-    {
-      number: '01',
-      title: 'Empathy Over Bureaucracy',
-      description: 'Emergency leave requests shouldn’t require multi-day paperwork. One-click Amber fast-track resolution respects human emergencies instantly.',
-    },
-    {
-      number: '02',
-      title: 'Radical Transparency',
-      description: 'Automated percentage-based salary structures eliminate ambiguity. Live calculation preview builds 100% trust between management & teams.',
-    },
-    {
-      number: '03',
-      title: 'Trust-Based Geofencing',
-      description: 'Respect location and shift timing without invasive micromanagement. Smart anomaly detection flags discrepancies fairly.',
-    },
-    {
-      number: '04',
-      title: 'Frictionless Automation',
-      description: 'By replacing hours of repetitive HR data entry with automated views & email credentials, leaders focus on growing people.',
-    },
-  ];
+  const filteredGallery =
+    activeGalleryTab === 'all'
+      ? galleryImages
+      : galleryImages.filter((img) => img.category === activeGalleryTab);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -303,141 +259,364 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Visionary Leadership Quotes & Workforce Manifesto */}
-      <section id="gallery" className="py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-16">
-        
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3.5 py-1 text-xs font-bold text-[#006837] border border-emerald-200">
-            <Quote className="w-3.5 h-3.5" />
-            <span>Workforce Philosophy & Vision</span>
+      {/* 3. Creative & Informal "A Workday with NexaWork" Interactive Experience */}
+      <section id="experience" className="py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-12">
+        {/* Section Header with Doodle Badges & Arrow Highlights */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 relative">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#EBF5F0] px-4 py-1.5 text-xs font-bold text-[#006837] border border-emerald-300/60 shadow-2xs transform -rotate-1">
+            <Zap className="w-4 h-4 text-[#006837] animate-pulse" />
+            <span>Frankly Speaking • No Boring Sales Pitch</span>
           </div>
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-[#1C1F1E]">
-            Wisdom That Drives Modern Teams
-          </h2>
-          <p className="text-sm text-[#6B7280]">
-            Grounding enterprise HR technology in timeless principles of human dignity, transparency, and organizational alignment.
-          </p>
-        </div>
 
-        {/* Featured Visionary Quote Spotlight Card */}
-        <div className="relative rounded-3xl bg-[#0A1A14] text-white p-8 sm:p-12 lg:p-14 overflow-hidden border border-emerald-900 shadow-2xl">
-          {/* Subtle Background Glows */}
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#006837]/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#7EC9A0]/10 rounded-full blur-2xl pointer-events-none" />
-
-          {/* Navigation Controls */}
-          <div className="flex items-center justify-between pb-8 border-b border-emerald-900/80">
-            <span className="rounded-full bg-emerald-900/60 border border-emerald-700/50 text-[#7EC9A0] text-xs font-bold px-3 py-1 uppercase tracking-wider">
-              {visionaryQuotes[activeQuoteIndex].category} &bull; {visionaryQuotes[activeQuoteIndex].tag}
+          <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-[#1C1F1E] tracking-tight leading-tight">
+            How NexaWork Actually Works <br className="hidden sm:inline" />
+            <span className="text-[#006837] relative inline-block underline decoration-emerald-400 decoration-wavy decoration-2">
+              24 Hours in 60 Seconds
             </span>
+          </h2>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() =>
-                  setActiveQuoteIndex((prev) => (prev === 0 ? visionaryQuotes.length - 1 : prev - 1))
-                }
-                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                aria-label="Previous quote"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() =>
-                  setActiveQuoteIndex((prev) => (prev === visionaryQuotes.length - 1 ? 0 : prev + 1))
-                }
-                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                aria-label="Next quote"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          <p className="text-sm sm:text-base text-[#6B7280] max-w-2xl mx-auto font-normal leading-relaxed">
+            Click through the workday steps below to test real-time geofencing, 1-click emergency leaves, AI Copilot answers, and live auto-reconciled payroll!
+          </p>
 
-          {/* Quote Body with AnimatePresence */}
-          <div className="py-8 min-h-[180px] flex items-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={visionaryQuotes[activeQuoteIndex].id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-6 max-w-4xl"
-              >
-                <blockquote className="font-display text-2xl sm:text-3xl lg:text-4xl font-medium text-emerald-50 leading-relaxed tracking-tight">
-                  “{visionaryQuotes[activeQuoteIndex].quote}”
-                </blockquote>
-
-                <div className="flex items-center gap-4 pt-2">
-                  <img
-                    src={visionaryQuotes[activeQuoteIndex].avatar}
-                    alt={visionaryQuotes[activeQuoteIndex].author}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-[#7EC9A0]"
-                  />
-                  <div>
-                    <div className="font-bold text-base text-white">
-                      {visionaryQuotes[activeQuoteIndex].author}
-                    </div>
-                    <div className="text-xs text-emerald-200/80">
-                      {visionaryQuotes[activeQuoteIndex].title}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Quote Dots Bar */}
-          <div className="flex items-center gap-2 pt-4">
-            {visionaryQuotes.map((q, idx) => (
-              <button
-                key={q.id}
-                onClick={() => setActiveQuoteIndex(idx)}
-                className={`h-2 rounded-full transition-all cursor-pointer ${
-                  idx === activeQuoteIndex ? 'w-8 bg-[#7EC9A0]' : 'w-2 bg-emerald-900 hover:bg-emerald-800'
-                }`}
-                aria-label={`Go to quote ${idx + 1}`}
-              />
-            ))}
+          {/* Playful Hand-Drawn Arrow Callout */}
+          <div className="hidden md:flex items-center justify-center gap-2 text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200 w-fit mx-auto transform rotate-2">
+            <span>↳ Click any timeline step to test the live simulator!</span>
           </div>
         </div>
 
-        {/* NexaWork Core Manifesto Grid (4 Creative Pillars) */}
-        <div className="space-y-8 pt-4">
-          <div className="text-center max-w-xl mx-auto">
-            <h3 className="font-display font-bold text-2xl text-[#1C1F1E]">
-              The NexaWork Core Manifesto
-            </h3>
-            <p className="text-xs text-[#6B7280] mt-1">
-              Four non-negotiable principles engineered into every line of code.
-            </p>
+        {/* Timeline Interactive Pill Navigation */}
+        <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">
+          <button
+            onClick={() => setActiveStoryStep('09:00')}
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
+              activeStoryStep === '09:00'
+                ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
+                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            <span>09:00 AM • Geofence Punch</span>
+          </button>
+
+          <button
+            onClick={() => setActiveStoryStep('01:30')}
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
+              activeStoryStep === '01:30'
+                ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
+                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+            }`}
+          >
+            <AlertTriangle className="w-4 h-4 text-amber-300" />
+            <span>01:30 PM • Emergency Fast-Track</span>
+          </button>
+
+          <button
+            onClick={() => setActiveStoryStep('04:00')}
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
+              activeStoryStep === '04:00'
+                ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
+                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-emerald-300" />
+            <span>04:00 PM • AI HR Copilot</span>
+          </button>
+
+          <button
+            onClick={() => setActiveStoryStep('06:00')}
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
+              activeStoryStep === '06:00'
+                ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
+                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+            }`}
+          >
+            <DollarSign className="w-4 h-4 text-emerald-300" />
+            <span>06:00 PM • Auto-Payroll Run</span>
+          </button>
+        </div>
+
+        {/* Live Simulator Canvas Card */}
+        <div className="max-w-4xl mx-auto rounded-3xl bg-white p-6 sm:p-10 border-2 border-dashed border-[#006837]/30 shadow-xl relative overflow-hidden transition-all">
+          {/* Top Decorative Tag */}
+          <div className="absolute top-4 right-4 bg-emerald-100 text-[#006837] font-mono text-[11px] font-bold px-3 py-1 rounded-full border border-emerald-200">
+            Interactive Simulator Mode
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {manifestoPillars.map((pillar) => (
-              <div
-                key={pillar.number}
-                className="rounded-2xl bg-white p-6 border border-gray-200 shadow-2xs hover:shadow-md transition-all space-y-3 flex flex-col justify-between"
-              >
+          {/* STEP 1: 09:00 AM GEOFENCE PUNCH */}
+          {activeStoryStep === '09:00' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-[#006837] flex items-center justify-center font-bold font-mono text-base">
+                  09:00
+                </div>
                 <div>
-                  <div className="font-mono text-2xl font-extrabold text-[#006837] tracking-tight">
-                    {pillar.number}
-                  </div>
-                  <h4 className="font-display font-bold text-base text-[#1C1F1E] mt-2">
-                    {pillar.title}
-                  </h4>
-                  <p className="text-xs text-gray-500 leading-relaxed mt-2">
-                    {pillar.description}
+                  <h3 className="font-display font-bold text-xl text-[#1C1F1E]">
+                    Geofenced Smart Arrival & Proxy Prevention
+                  </h3>
+                  <p className="text-xs text-[#6B7280]">
+                    GPS Location verification within 50m office radius. Zero manual proxy clock-ins allowed.
                   </p>
                 </div>
+              </div>
 
-                <div className="pt-3 border-t border-gray-100 flex items-center gap-1.5 text-[10px] font-bold text-[#006837] uppercase tracking-wider">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Built-in Default</span>
+              {/* Simulated GPS Widget */}
+              <div className="p-5 rounded-2xl bg-[#0A1A14] text-white space-y-4 border border-emerald-900">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-300">
+                    <MapPin className="w-4 h-4 text-emerald-400 animate-bounce" />
+                    <span>GPS Geofence Radar Active</span>
+                  </div>
+                  <span className="bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/40">
+                    STATUS: INSIDE RADIUS (32m)
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-white/10 border border-white/10">
+                    <div className="text-[10px] text-emerald-200/70 uppercase">Allowed Radius</div>
+                    <div className="font-bold text-white text-base font-mono">50 Meters</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/10 border border-white/10">
+                    <div className="text-[10px] text-emerald-200/70 uppercase">Your GPS Distance</div>
+                    <div className="font-bold text-emerald-300 text-base font-mono">32.4 Meters</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/10 border border-white/10">
+                    <div className="text-[10px] text-emerald-200/70 uppercase">Punch Verified</div>
+                    <div className="font-bold text-emerald-400 text-base font-mono">09:02:14 AM</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-emerald-200/80 pt-2 border-t border-white/10">
+                  <span>✓ Device MAC & Location Signature Verified</span>
+                  <span className="font-bold text-white">1-Tap Punch Success!</span>
                 </div>
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* STEP 2: 01:30 PM EMERGENCY LEAVE */}
+          {activeStoryStep === '01:30' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold font-mono text-base">
+                  13:30
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-xl text-[#1C1F1E]">
+                    1-Click Emergency Half-Day Fast-Track
+                  </h3>
+                  <p className="text-xs text-[#6B7280]">
+                    Sudden personal or medical emergency? Pinned to HR control tower in Amber for 1-click resolution.
+                  </p>
+                </div>
+              </div>
+
+              {/* Simulated Emergency Card */}
+              <div className="p-5 rounded-2xl bg-amber-500 text-white space-y-4 border border-amber-600 shadow-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-bold text-amber-100">
+                    <AlertTriangle className="w-4 h-4 text-white" />
+                    <span>EMERGENCY LEAVE REQUEST LOGGED</span>
+                  </div>
+                  <span className="bg-white text-amber-900 font-mono text-[10px] font-extrabold px-2.5 py-0.5 rounded-full shadow-2xs">
+                    PINNED TO HR TOP QUEUE
+                  </span>
+                </div>
+
+                <div className="bg-white/10 p-4 rounded-xl space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-amber-100">Employee:</span>
+                    <span className="font-bold">Ravi Sharma (Senior Engineer)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-amber-100">Category:</span>
+                    <span className="font-bold">Urgent Family Medical Emergency</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-amber-100">HR Resolution Time:</span>
+                    <span className="font-mono font-bold text-white">45 Seconds (Auto-Approved)</span>
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-amber-100 flex items-center justify-between pt-1">
+                  <span>⚡ Automatic balance deduction: -0.5 Emergency Leave Day</span>
+                  <span className="font-bold text-white bg-amber-600 px-3 py-1 rounded-lg">Status: Approved ✓</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: 04:00 PM AI HR COPILOT */}
+          {activeStoryStep === '04:00' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-[#006837] flex items-center justify-center font-bold font-mono text-base">
+                  16:00
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-xl text-[#1C1F1E]">
+                    24/7 AI HR Copilot & Instant Policy Resolver
+                  </h3>
+                  <p className="text-xs text-[#6B7280]">
+                    Ask any question about leave balances, company policies, or payroll items without emailing HR.
+                  </p>
+                </div>
+              </div>
+
+              {/* Simulated AI Chat Window */}
+              <div className="p-5 rounded-2xl bg-gray-900 text-white space-y-4 border border-gray-800 font-sans">
+                <div className="flex items-center gap-2 border-b border-gray-800 pb-3">
+                  <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
+                  <span className="text-xs font-bold text-white">NexaWork AI HR Assistant</span>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  {/* User Query */}
+                  <div className="flex justify-end">
+                    <div className="bg-[#006837] text-white p-3 rounded-2xl rounded-tr-none max-w-sm">
+                      "How many paid leaves do I have left, and can I take 2 days off next week?"
+                    </div>
+                  </div>
+
+                  {/* AI Response */}
+                  <div className="flex gap-2">
+                    <div className="w-6 h-6 rounded-full bg-emerald-500 text-black font-bold flex items-center justify-center text-[10px] shrink-0">
+                      AI
+                    </div>
+                    <div className="bg-gray-800 text-gray-200 p-3.5 rounded-2xl rounded-tl-none max-w-md space-y-1.5 leading-relaxed">
+                      <p>
+                        Hi Ravi! You currently have <strong className="text-emerald-400">14 Paid Leaves</strong> and <strong className="text-emerald-400">8 Sick Leaves</strong> remaining in your balance ledger.
+                      </p>
+                      <p className="text-[11px] text-gray-400">
+                        ✓ Taking 2 days next week will leave you with 12 Paid Leaves. No calendar conflicts detected in the Engineering squad!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: 06:00 PM AUTOMATED PAYROLL RUN */}
+          {activeStoryStep === '06:00' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-[#006837] flex items-center justify-center font-bold font-mono text-base">
+                  18:00
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-xl text-[#1C1F1E]">
+                    Automated Percentage-Based Payroll Engine
+                  </h3>
+                  <p className="text-xs text-[#6B7280]">
+                    Drag the Basic Salary slider below to see real-time automated calculation of HRA, DA, TA, PF, Tax, and Net Pay!
+                  </p>
+                </div>
+              </div>
+
+              {/* Live Interactive Salary Calculator Slider */}
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-950 to-[#0A1A14] text-white space-y-5 border border-emerald-900">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-emerald-200 font-semibold">Monthly Basic Salary (Adjust Slider):</span>
+                    <span className="font-mono font-extrabold text-lg text-emerald-300">
+                      ${simulatedBasicSalary.toLocaleString()} / mo
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="3000"
+                    max="15000"
+                    step="500"
+                    value={simulatedBasicSalary}
+                    onChange={(e) => setSimulatedBasicSalary(Number(e.target.value))}
+                    className="w-full accent-[#7EC9A0] cursor-pointer"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
+                  <div className="p-3 rounded-xl bg-white/10 border border-white/10">
+                    <div className="text-[10px] text-emerald-200/70">HRA (15%)</div>
+                    <div className="font-bold text-white font-mono">${hra.toLocaleString()}</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/10 border border-white/10">
+                    <div className="text-[10px] text-emerald-200/70">DA (5%) + TA (10%)</div>
+                    <div className="font-bold text-white font-mono">${(da + ta).toLocaleString()}</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/10 border border-white/10">
+                    <div className="text-[10px] text-rose-300/80">PF Deduction (12%)</div>
+                    <div className="font-bold text-rose-300 font-mono">-${pf.toLocaleString()}</div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400/40">
+                    <div className="text-[10px] text-emerald-300 font-bold uppercase">Net Take-Home</div>
+                    <div className="font-extrabold text-emerald-300 text-lg font-mono">${netTakeHome.toLocaleString()}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-emerald-200/80 pt-1">
+                  <span>✓ Auto-Generated Payslips Dispatched via Nodemailer</span>
+                  <span className="font-mono text-white font-bold">100% Tax Compliant</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 4. "Frankly Speaking: Traditional HR vs NexaWork" Visual Comparison */}
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+          {/* Old Way */}
+          <div className="rounded-3xl bg-rose-50/70 p-6 sm:p-8 border border-rose-200 space-y-4 relative">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-200 text-rose-900 font-bold text-xs px-3.5 py-1">
+              <XCircle className="w-4 h-4 text-rose-700" />
+              <span>Traditional HR Overhead (The Old Way)</span>
+            </div>
+
+            <ul className="space-y-3 text-xs text-rose-950/80 font-medium">
+              <li className="flex items-start gap-2">
+                <span className="text-rose-600 font-bold">✕</span>
+                <span>Paper leave forms lost under desk stacks & slow manual approvals.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-600 font-bold">✕</span>
+                <span>Proxy attendance disputes and unverified manual log entries.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-600 font-bold">✕</span>
+                <span>Excel formula errors causing delayed monthly payroll payouts.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-600 font-bold">✕</span>
+                <span>Unverified employee onboarding without HR recruitment approval gates.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* NexaWork Way */}
+          <div className="rounded-3xl bg-[#EBF5F0] p-6 sm:p-8 border-2 border-[#006837] space-y-4 shadow-lg relative transform md:scale-105">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-[#006837] text-white font-bold text-xs px-3.5 py-1 shadow-2xs">
+              <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+              <span>NexaWork Engine (The Smart Way)</span>
+            </div>
+
+            <ul className="space-y-3 text-xs text-[#1C1F1E] font-semibold">
+              <li className="flex items-start gap-2">
+                <span className="text-[#006837] font-bold">✓</span>
+                <span>Geofence GPS radius punch with real-time proxy anomaly shield.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#006837] font-bold">✓</span>
+                <span>1-Click Amber Emergency Half-Day fast-track HR queue.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#006837] font-bold">✓</span>
+                <span>Automated Postgres view math for live net salary calculations.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#006837] font-bold">✓</span>
+                <span>Candidate Interview Verification Gate before account activation.</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
