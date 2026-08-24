@@ -265,6 +265,50 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     setCurrentUser(userToSet);
     setCurrentView(viewToSet);
+
+    // Sync registered user directly into employees database table if not present!
+    if (userToSet) {
+      setEmployees((prev) => {
+        const exists = prev.some(
+          (e) => e.email.toLowerCase() === userToSet.email.toLowerCase() || (userToSet.employeeId && e.employeeId === userToSet.employeeId)
+        );
+        if (exists) return prev;
+
+        const newEmpRecord: Employee = {
+          id: userToSet.id || 'emp-' + Date.now(),
+          employeeId: userToSet.employeeId || (role === 'admin' ? 'DF-ADM-02' : 'EMP-2027'),
+          name: userToSet.name,
+          email: userToSet.email,
+          phone: '+1 (555) 230-8000',
+          address: 'Executive Operations Center',
+          avatar: userToSet.avatar,
+          role: userToSet.designation || (role === 'admin' ? 'Head of People & Operations' : 'Software Engineer'),
+          department: (userToSet.department as any) || (role === 'admin' ? 'People & HR' : 'Engineering'),
+          manager: role === 'admin' ? 'Board of Directors' : 'Eleanor Vance',
+          dateOfJoining: new Date().toISOString().split('T')[0],
+          status: 'Active',
+          todayStatus: 'Present',
+          checkInTime: '08:45 AM',
+          salary: {
+            monthlyBasic: role === 'admin' ? 12500 : 8500,
+            yearlyBasic: role === 'admin' ? 150000 : 102000,
+            allowances: { hra: 5000, da: 1250, travel: 800, special: 2000 },
+            deductions: { pf: 1500, tax: 2250, insurance: 400 },
+          },
+          leaveBalance: { paid: 20, paidTotal: 20, sick: 10, sickTotal: 10, unpaidUsed: 0 },
+          documents: [{ name: 'Registration_Verification.pdf', type: 'PDF', uploadedOn: new Date().toISOString().split('T')[0], size: '1.2 MB' }],
+        };
+
+        const updated = [newEmpRecord, ...prev];
+        try {
+          localStorage.setItem('df_employees', JSON.stringify(updated));
+        } catch (e) {
+          console.warn('[LocalStorage Sync Note]', e);
+        }
+        return updated;
+      });
+    }
+
     try {
       localStorage.setItem('df_user', JSON.stringify(userToSet));
       localStorage.setItem('df_view', viewToSet);
