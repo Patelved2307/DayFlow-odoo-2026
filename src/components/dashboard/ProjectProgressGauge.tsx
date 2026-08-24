@@ -25,9 +25,9 @@ export const ProjectProgressGauge: React.FC = () => {
         </span>
       </div>
 
-      {/* Speedometer Arc Visual */}
+      {/* Speedometer Arc Visual (100% Mathematically Identical Paths) */}
       <div className="relative flex flex-col items-center justify-center my-2 py-1">
-        <svg viewBox="0 0 200 110" className="w-48 h-26">
+        <svg viewBox="0 0 200 115" className="w-52 h-28 overflow-visible">
           {/* Background Track Arc */}
           <path
             d="M 25 95 A 75 75 0 0 1 175 95"
@@ -46,15 +46,15 @@ export const ProjectProgressGauge: React.FC = () => {
             strokeDasharray="3 3"
           />
 
-          {/* Animated 94.2% Target Arc Sweep */}
+          {/* Animated 94.2% Target Arc — Identical D Path Ensures 100% Perfect Overlay */}
           <motion.path
-            d="M 25 95 A 75 75 0 0 1 166 78"
+            d="M 25 95 A 75 75 0 0 1 175 95"
             fill="none"
             stroke="url(#speedometerGrad)"
             strokeWidth="16"
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            animate={{ pathLength: 0.942 }}
             transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
           />
 
@@ -67,11 +67,11 @@ export const ProjectProgressGauge: React.FC = () => {
         </svg>
 
         {/* Perfectly Centered Percentage Display */}
-        <div className="absolute top-[34%] left-1/2 -translate-x-1/2 flex flex-col items-center justify-center text-center">
+        <div className="absolute top-[38%] left-1/2 -translate-x-1/2 flex flex-col items-center justify-center text-center">
           <div className="font-display font-extrabold text-3xl text-[#1C1F1E] tracking-tight leading-none">
             <AnimatedCounter to={94.2} decimals={1} suffix="%" />
           </div>
-          <span className="text-[10px] font-bold text-[#006837] flex items-center gap-1 mt-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/50">
+          <span className="text-[10px] font-bold text-[#006837] flex items-center gap-1 mt-1.5 bg-emerald-50/90 px-2 py-0.5 rounded-full border border-emerald-200/60 shadow-2xs">
             <TrendingUp className="w-3 h-3 text-[#006837]" />
             <span>Shift Target Met</span>
           </span>
