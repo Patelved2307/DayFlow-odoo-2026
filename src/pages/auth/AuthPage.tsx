@@ -25,6 +25,8 @@ export const AuthPage: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [registerRole, setRegisterRole] = useState<'employee' | 'admin'>('employee');
+  const [adminKey, setAdminKey] = useState('');
   const [gateError, setGateError] = useState<string | null>(null);
 
   // Real-time Password Strength Hook
@@ -49,13 +51,21 @@ export const AuthPage: React.FC = () => {
     setGateError(null);
 
     const inputVal = (email || '').toLowerCase().trim();
-    const isAdmin = inputVal.includes('admin') || employeeId.toLowerCase().includes('admin');
+    const cleanPass = password.trim();
 
-    if (isSupabaseConfigured && email && password) {
+    if (!cleanPass || cleanPass.length < 6) {
+      setGateError('Authentication failed: Password is required and must be at least 6 characters.');
+      setIsLoading(false);
+      return;
+    }
+
+    const isAdmin = inputVal.includes('admin') || inputVal === 'eleanor.vance@dayflow.work' || inputVal === 'df-adm-01';
+
+    if (isSupabaseConfigured && email && cleanPass) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          password,
+          password: cleanPass,
         });
 
         if (error) {
@@ -72,6 +82,7 @@ export const AuthPage: React.FC = () => {
 
     if (isAdmin) {
       login('admin');
+      showToast('Authenticated as HR Administrator (Eleanor Vance)', 'success');
     } else {
       if (inputVal.includes('paved') || inputVal.includes('2026') || employeeId === '2026' || employeeId === 'EMP-2026') {
         login('employee', {
@@ -87,6 +98,7 @@ export const AuthPage: React.FC = () => {
       } else {
         login('employee');
       }
+      showToast('Authenticated successfully as Staff Member', 'success');
     }
   };
 
@@ -299,36 +311,6 @@ export const AuthPage: React.FC = () => {
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
               </button>
 
-              {/* Quick 1-Click Role Direct Logins */}
-              <div className="pt-2 border-t border-gray-200/80 space-y-2">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 text-center">
-                  Quick Demo Access
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      login('admin');
-                      showToast('Logged in as HR Administrator (Eleanor Vance)', 'success');
-                    }}
-                    className="py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[#006837] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Shield className="w-3.5 h-3.5" />
-                    <span>HR Admin</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      login('employee');
-                      showToast('Logged in as Staff (Patel Ved)', 'success');
-                    }}
-                    className="py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <User className="w-3.5 h-3.5" />
-                    <span>Staff Member</span>
-                  </button>
-                </div>
-              </div>
             </form>
           ) : (
             /* Registration Form with Database Recruitment Gate & Password Strength Engine */
