@@ -289,19 +289,24 @@ export const AuthPage: React.FC = () => {
 
     setIsLoading(false);
 
-    // 5. Successful Staff Registration & Instant Workspace Redirection
+    // 5. Save Registered User Record to Persistent Database Store & Log In
     const registeredUser = {
-      id: 'usr-' + cleanEmpId,
+      id: 'usr-' + (registerRole === 'admin' ? 'admin-' : '') + Date.now(),
       name: profile?.name || userName,
       email: userEmail,
-      role: 'employee' as const,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      employeeId: cleanEmpId.startsWith('EMP') || cleanEmpId.startsWith('DF') ? cleanEmpId : `EMP-${cleanEmpId}`,
-      designation: 'Lead Full Stack Engineer',
-      department: 'Engineering',
+      role: registerRole,
+      avatar: registerRole === 'admin'
+        ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
+        : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      employeeId: cleanEmpId.startsWith('EMP') || cleanEmpId.startsWith('DF')
+        ? cleanEmpId
+        : (registerRole === 'admin' ? `DF-ADM-${Math.floor(100 + Math.random() * 900)}` : `EMP-${cleanEmpId}`),
+      designation: registerRole === 'admin' ? 'HR Administrator' : 'Lead Full Stack Engineer',
+      department: registerRole === 'admin' ? 'People & HR' : 'Engineering',
     };
 
-    login('employee', registeredUser);
+    saveStoredAccount({ ...registeredUser, password });
+    login(registerRole, registeredUser);
   };
 
   const bgImage = isSignUp

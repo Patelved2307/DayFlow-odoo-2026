@@ -255,9 +255,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     let userToSet: User;
     let viewToSet: AppView;
     if (role === 'admin') {
-      userToSet = ADMIN_USER;
+      userToSet = customUser || ADMIN_USER;
       viewToSet = 'admin-dashboard';
-      showToast('Signed in as HR Administrator (Eleanor Vance)', 'success');
+      showToast(`Signed in as HR Administrator (${userToSet.name})`, 'success');
     } else {
       userToSet = customUser || EMPLOYEE_USER;
       viewToSet = 'emp-dashboard';
