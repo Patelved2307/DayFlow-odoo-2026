@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../lib/context/AppContext';
 import { NexaWorkLogo } from '../../components/layout/NexaWorkLogo';
 import { sendAutomatedEmail } from '../../lib/services/emailService';
@@ -20,13 +20,17 @@ import {
   Star,
   ExternalLink,
   ChevronRight,
+  Quote,
+  Heart,
+  Compass,
+  Lightbulb,
+  ChevronLeft,
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, login, showToast, navigateToAuth } = useApp();
   const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [activeGalleryTab, setActiveGalleryTab] = useState<'all' | 'culture' | 'tech' | 'leadership'>('all');
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [activeQuoteIndex, setActiveQuoteIndex] = useState(0);
 
   const galleryImages = [
     {
@@ -79,10 +83,67 @@ export const LandingPage: React.FC = () => {
     },
   ];
 
-  const filteredGallery =
-    activeGalleryTab === 'all'
-      ? galleryImages
-      : galleryImages.filter((img) => img.category === activeGalleryTab);
+  const visionaryQuotes = [
+    {
+      id: 'q-1',
+      quote: "Clients do not come first. Employees come first. If you take care of your employees, they will take care of the clients.",
+      author: "Sir Richard Branson",
+      title: "Founder, Virgin Group",
+      category: "Workforce Philosophy",
+      tag: "People First",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    },
+    {
+      id: 'q-2',
+      quote: "A team is not a group of people who work together. A team is a group of people who trust each other.",
+      author: "Simon Sinek",
+      title: "Author & Organisational Thinker",
+      category: "Culture & Trust",
+      tag: "Radical Trust",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    },
+    {
+      id: 'q-3',
+      quote: "Great things in business are never done by one person. They're done by a team of people aligned around a shared vision.",
+      author: "Steve Jobs",
+      title: "Co-Founder, Apple",
+      category: "Leadership Alignment",
+      tag: "Team Synergy",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+    },
+    {
+      id: 'q-4',
+      quote: "Efficiency is doing things right; effectiveness is doing the right things for your people.",
+      author: "Peter Drucker",
+      title: "Father of Modern Management",
+      category: "Operational Excellence",
+      tag: "Frictionless HR",
+      avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80",
+    },
+  ];
+
+  const manifestoPillars = [
+    {
+      number: '01',
+      title: 'Empathy Over Bureaucracy',
+      description: 'Emergency leave requests shouldn’t require multi-day paperwork. One-click Amber fast-track resolution respects human emergencies instantly.',
+    },
+    {
+      number: '02',
+      title: 'Radical Transparency',
+      description: 'Automated percentage-based salary structures eliminate ambiguity. Live calculation preview builds 100% trust between management & teams.',
+    },
+    {
+      number: '03',
+      title: 'Trust-Based Geofencing',
+      description: 'Respect location and shift timing without invasive micromanagement. Smart anomaly detection flags discrepancies fairly.',
+    },
+    {
+      number: '04',
+      title: 'Frictionless Automation',
+      description: 'By replacing hours of repetitive HR data entry with automated views & email credentials, leaders focus on growing people.',
+    },
+  ];
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,95 +303,142 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Organization Culture & Workplace Galleries */}
-      <section id="gallery" className="py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-10">
+      {/* 3. Visionary Leadership Quotes & Workforce Manifesto */}
+      <section id="gallery" className="py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-16">
+        
+        {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#006837] border border-emerald-200">
-            <Camera className="w-3.5 h-3.5" />
-            <span>Workplace Culture & Life at NexaWork</span>
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3.5 py-1 text-xs font-bold text-[#006837] border border-emerald-200">
+            <Quote className="w-3.5 h-3.5" />
+            <span>Workforce Philosophy & Vision</span>
           </div>
           <h2 className="font-display font-bold text-3xl sm:text-4xl text-[#1C1F1E]">
-            Our Organization Galleries
+            Wisdom That Drives Modern Teams
           </h2>
           <p className="text-sm text-[#6B7280]">
-            Take a visual tour inside our campuses, collaborative team hackathons, executive town halls, and modern engineering hubs.
+            Grounding enterprise HR technology in timeless principles of human dignity, transparency, and organizational alignment.
           </p>
+        </div>
 
-          {/* Filter Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
-            <button
-              onClick={() => setActiveGalleryTab('all')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeGalleryTab === 'all'
-                  ? 'bg-[#006837] text-white shadow-xs'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              All Showcase
-            </button>
-            <button
-              onClick={() => setActiveGalleryTab('tech')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeGalleryTab === 'tech'
-                  ? 'bg-[#006837] text-white shadow-xs'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              Engineering & Design
-            </button>
-            <button
-              onClick={() => setActiveGalleryTab('culture')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeGalleryTab === 'culture'
-                  ? 'bg-[#006837] text-white shadow-xs'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              Culture & Retreats
-            </button>
-            <button
-              onClick={() => setActiveGalleryTab('leadership')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                activeGalleryTab === 'leadership'
-                  ? 'bg-[#006837] text-white shadow-xs'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              Leadership & Summits
-            </button>
+        {/* Featured Visionary Quote Spotlight Card */}
+        <div className="relative rounded-3xl bg-[#0A1A14] text-white p-8 sm:p-12 lg:p-14 overflow-hidden border border-emerald-900 shadow-2xl">
+          {/* Subtle Background Glows */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#006837]/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#7EC9A0]/10 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-between pb-8 border-b border-emerald-900/80">
+            <span className="rounded-full bg-emerald-900/60 border border-emerald-700/50 text-[#7EC9A0] text-xs font-bold px-3 py-1 uppercase tracking-wider">
+              {visionaryQuotes[activeQuoteIndex].category} &bull; {visionaryQuotes[activeQuoteIndex].tag}
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  setActiveQuoteIndex((prev) => (prev === 0 ? visionaryQuotes.length - 1 : prev - 1))
+                }
+                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                aria-label="Previous quote"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() =>
+                  setActiveQuoteIndex((prev) => (prev === visionaryQuotes.length - 1 ? 0 : prev + 1))
+                }
+                className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                aria-label="Next quote"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Quote Body with AnimatePresence */}
+          <div className="py-8 min-h-[180px] flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={visionaryQuotes[activeQuoteIndex].id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.4 }}
+                className="space-y-6 max-w-4xl"
+              >
+                <blockquote className="font-display text-2xl sm:text-3xl lg:text-4xl font-medium text-emerald-50 leading-relaxed tracking-tight">
+                  “{visionaryQuotes[activeQuoteIndex].quote}”
+                </blockquote>
+
+                <div className="flex items-center gap-4 pt-2">
+                  <img
+                    src={visionaryQuotes[activeQuoteIndex].avatar}
+                    alt={visionaryQuotes[activeQuoteIndex].author}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#7EC9A0]"
+                  />
+                  <div>
+                    <div className="font-bold text-base text-white">
+                      {visionaryQuotes[activeQuoteIndex].author}
+                    </div>
+                    <div className="text-xs text-emerald-200/80">
+                      {visionaryQuotes[activeQuoteIndex].title}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Quote Dots Bar */}
+          <div className="flex items-center gap-2 pt-4">
+            {visionaryQuotes.map((q, idx) => (
+              <button
+                key={q.id}
+                onClick={() => setActiveQuoteIndex(idx)}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  idx === activeQuoteIndex ? 'w-8 bg-[#7EC9A0]' : 'w-2 bg-emerald-900 hover:bg-emerald-800'
+                }`}
+                aria-label={`Go to quote ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGallery.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedImage(item.image)}
-              className="group rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col justify-between"
-            >
-              <div className="relative h-52 overflow-hidden bg-gray-100">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  {item.location}
+        {/* NexaWork Core Manifesto Grid (4 Creative Pillars) */}
+        <div className="space-y-8 pt-4">
+          <div className="text-center max-w-xl mx-auto">
+            <h3 className="font-display font-bold text-2xl text-[#1C1F1E]">
+              The NexaWork Core Manifesto
+            </h3>
+            <p className="text-xs text-[#6B7280] mt-1">
+              Four non-negotiable principles engineered into every line of code.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {manifestoPillars.map((pillar) => (
+              <div
+                key={pillar.number}
+                className="rounded-2xl bg-white p-6 border border-gray-200 shadow-2xs hover:shadow-md transition-all space-y-3 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="font-mono text-2xl font-extrabold text-[#006837] tracking-tight">
+                    {pillar.number}
+                  </div>
+                  <h4 className="font-display font-bold text-base text-[#1C1F1E] mt-2">
+                    {pillar.title}
+                  </h4>
+                  <p className="text-xs text-gray-500 leading-relaxed mt-2">
+                    {pillar.description}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-gray-100 flex items-center gap-1.5 text-[10px] font-bold text-[#006837] uppercase tracking-wider">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Built-in Default</span>
                 </div>
               </div>
-
-              <div className="p-5 space-y-2">
-                <h3 className="font-display font-bold text-base text-[#1C1F1E] group-hover:text-[#006837] transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-gray-500 leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
