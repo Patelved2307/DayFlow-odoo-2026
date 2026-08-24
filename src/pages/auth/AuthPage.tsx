@@ -25,6 +25,7 @@ export const AuthPage: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loginRole, setLoginRole] = useState<'employee' | 'admin'>('admin');
   const [registerRole, setRegisterRole] = useState<'employee' | 'admin'>('employee');
   const [adminKey, setAdminKey] = useState('');
   const [gateError, setGateError] = useState<string | null>(null);
@@ -59,8 +60,6 @@ export const AuthPage: React.FC = () => {
       return;
     }
 
-    const isAdmin = inputVal.includes('admin') || inputVal === 'eleanor.vance@dayflow.work' || inputVal === 'df-adm-01';
-
     if (isSupabaseConfigured && email && cleanPass) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -80,7 +79,8 @@ export const AuthPage: React.FC = () => {
 
     setIsLoading(false);
 
-    if (isAdmin) {
+    // Role-based redirection based on explicit Role Selector Input!
+    if (loginRole === 'admin' || inputVal.includes('admin') || inputVal === 'eleanor.vance@dayflow.work' || inputVal === 'df-adm-01') {
       login('admin');
       showToast('Authenticated as HR Administrator (Eleanor Vance)', 'success');
     } else {
@@ -261,9 +261,43 @@ export const AuthPage: React.FC = () => {
           {/* Sign In Form */}
           {!isSignUp ? (
             <form onSubmit={handleSignIn} className="space-y-4">
+              {/* Explicit Role Selection Input Toggle */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C1F1E] mb-1.5">
+                  Select Access Portal Role <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-gray-100 border border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setLoginRole('admin')}
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      loginRole === 'admin'
+                        ? 'bg-[#006837] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>HR Admin</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setLoginRole('employee')}
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      loginRole === 'employee'
+                        ? 'bg-[#006837] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>Staff Member</span>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
-                  Employee ID or Corporate Email
+                  {loginRole === 'admin' ? 'HR Admin Email / ID' : 'Employee ID or Corporate Email'}
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -272,7 +306,11 @@ export const AuthPage: React.FC = () => {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="COEDELKOLH00508 or name@nexawork.com"
+                    placeholder={
+                      loginRole === 'admin'
+                        ? 'admin@nexawork.com or eleanor.vance@dayflow.work'
+                        : 'EMP-2026 or paved2307@mail.com'
+                    }
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
                 </div>
