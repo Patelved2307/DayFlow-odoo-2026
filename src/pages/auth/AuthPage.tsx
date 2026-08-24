@@ -111,14 +111,43 @@ export const AuthPage: React.FC = () => {
     const userEmail = email.trim() || 'employee@nexawork.com';
     const userName = name.trim() || 'New Employee';
 
-    // 1. Password Match Check
+    // 1. Password Match & Length Check
     if (password && confirmPassword && password !== confirmPassword) {
       setGateError('Passwords do not match.');
       setIsLoading(false);
       return;
     }
 
-    // 2. Check recruitment interview profile status if listed
+    if (!password || password.length < 6) {
+      setGateError('Registration failed: Password must be at least 6 characters.');
+      setIsLoading(false);
+      return;
+    }
+
+    // 2. HR Admin Security Passcode Check
+    if (registerRole === 'admin') {
+      if (adminKey.toUpperCase() !== 'NEXA2026' && adminKey.toUpperCase() !== 'ADMIN2026') {
+        setGateError('Invalid HR Authorization Security Code. (HR Executive Authorization Passcode: NEXA2026)');
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(false);
+      login('admin', {
+        id: 'usr-admin-' + Date.now(),
+        name: userName,
+        email: userEmail,
+        role: 'admin',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+        employeeId: cleanEmpId.startsWith('DF-ADM') ? cleanEmpId : 'DF-ADM-02',
+        designation: 'HR Administrator',
+        department: 'People & HR',
+      });
+      showToast(`HR Administrator account registered & authenticated for ${userName}!`, 'success');
+      return;
+    }
+
+    // 3. Staff Registration - Check recruitment interview profile status if listed
     const profile = interviewProfilesMock[cleanEmpId.toUpperCase()] || interviewProfilesMock[cleanEmpId];
 
     if (profile) {
@@ -134,12 +163,12 @@ export const AuthPage: React.FC = () => {
       }
     }
 
-    // 3. Optional Supabase Auth Sign Up
+    // 4. Optional Supabase Auth Sign Up
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signUp({
           email: userEmail,
-          password: password || 'NexaWork2026!',
+          password: password,
           options: {
             data: {
               employee_id: cleanEmpId,
@@ -176,7 +205,7 @@ export const AuthPage: React.FC = () => {
 
     setIsLoading(false);
 
-    // 5. Successful Registration & Instant Workspace Redirection
+    // 5. Successful Staff Registration & Instant Workspace Redirection
     const registeredUser = {
       id: 'usr-' + cleanEmpId,
       name: profile?.name || userName,
@@ -188,7 +217,6 @@ export const AuthPage: React.FC = () => {
       department: 'Engineering',
     };
 
-    showToast(`Account registered for ${profile?.name || userName}! Initialized leave balances & workspace access.`, 'success');
     login('employee', registeredUser);
   };
 
@@ -351,11 +379,68 @@ export const AuthPage: React.FC = () => {
 
             </form>
           ) : (
-            /* Registration Form with Database Recruitment Gate & Password Strength Engine */
+            /* Registration Form with Role Selector & Database Recruitment Gate */
             <form onSubmit={handleRegister} className="space-y-3.5">
+              {/* Role Selection for Registration */}
+              <div>
+                <label className="block text-xs font-bold text-[#1C1F1E] mb-1.5">
+                  Register Account As <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 p-1 rounded-xl bg-gray-100 border border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => setRegisterRole('employee')}
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      registerRole === 'employee'
+                        ? 'bg-[#006837] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>Staff Member</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setRegisterRole('admin')}
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      registerRole === 'admin'
+                        ? 'bg-[#006837] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>HR Admin</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* If HR Administrator selected, require Admin Security Authorization Key */}
+              {registerRole === 'admin' && (
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1.5 animate-in fade-in">
+                  <label className="block text-xs font-bold text-[#006837]">
+                    HR Authorization Security Code <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <Lock className="w-4 h-4 text-[#006837] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="password"
+                      required
+                      value={adminKey}
+                      onChange={(e) => setAdminKey(e.target.value)}
+                      placeholder="Enter Security Passcode (NEXA2026)"
+                      className="w-full pl-10 pr-4 py-2 rounded-xl border border-emerald-300 bg-white text-xs font-mono font-bold text-[#006837] outline-none focus:ring-2 focus:ring-[#006837]/30"
+                    />
+                  </div>
+                  <p className="text-[10px] text-emerald-700">
+                    HR Admin registration requires executive passcode authorization (Code: <strong className="font-mono">NEXA2026</strong>).
+                  </p>
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
-                  Employee ID <span className="text-gray-400 font-normal">(e.g. COEDELKOLH00508)</span>
+                  {registerRole === 'admin' ? 'HR Executive ID (e.g. DF-ADM-02)' : 'Employee ID (e.g. COEDELKOLH00508)'}
                 </label>
                 <div className="relative">
                   <Shield className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
