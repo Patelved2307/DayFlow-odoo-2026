@@ -48,7 +48,8 @@ export const AuthPage: React.FC = () => {
     setIsLoading(true);
     setGateError(null);
 
-    const isAdmin = email.includes('admin') || employeeId.toLowerCase().includes('admin');
+    const inputVal = (email || '').toLowerCase().trim();
+    const isAdmin = inputVal.includes('admin') || employeeId.toLowerCase().includes('admin');
 
     if (isSupabaseConfigured && email && password) {
       try {
@@ -68,14 +69,15 @@ export const AuthPage: React.FC = () => {
     }
 
     setIsLoading(false);
+
     if (isAdmin) {
       login('admin');
     } else {
-      if (email.includes('paved') || employeeId === '2026' || employeeId === 'EMP-2026') {
+      if (inputVal.includes('paved') || inputVal.includes('2026') || employeeId === '2026' || employeeId === 'EMP-2026') {
         login('employee', {
           id: 'usr-2026',
           name: 'Patel Ved',
-          email: 'paved2307@mail.com',
+          email: email || 'paved2307@mail.com',
           role: 'employee',
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
           employeeId: 'EMP-2026',
@@ -93,63 +95,44 @@ export const AuthPage: React.FC = () => {
     setGateError(null);
     setIsLoading(true);
 
-    const cleanEmpId = employeeId.trim();
+    const cleanEmpId = employeeId.trim() || 'EMP-2026';
+    const userEmail = email.trim() || 'employee@nexawork.com';
+    const userName = name.trim() || 'New Employee';
 
-    // 1. Alphanumeric Regex Check (e.g. COEDELKOLH00508 or DF-EMP-104)
-    const idRegex = /^[A-Za-z0-9\-]{5,20}$/;
-    if (!idRegex.test(cleanEmpId)) {
-      setGateError('Invalid ID format. Must be 5-20 alphanumeric characters (e.g. COEDELKOLH00508).');
-      setIsLoading(false);
-      return;
-    }
-
-    // 2. Query interview_profiles
-    const profile = interviewProfilesMock[cleanEmpId.toUpperCase()] || interviewProfilesMock[cleanEmpId];
-
-    if (!profile) {
-      setGateError('Employee record does not exist. Please double-check your ID or contact your HR Administrator.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (profile.status === 'Pending') {
-      setGateError('Your recruitment process is currently incomplete. Registration is locked until your interview status is Approved by HR.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (profile.status === 'Rejected') {
-      setGateError('Registration blocked. The interview record for this ID is marked as Rejected.');
-      setIsLoading(false);
-      return;
-    }
-
-    // 3. Confirm Password Match & Password Strength Security Gate (> 50%)
-    if (password !== confirmPassword) {
+    // 1. Password Match Check
+    if (password && confirmPassword && password !== confirmPassword) {
       setGateError('Passwords do not match.');
       setIsLoading(false);
       return;
     }
 
-    if (!strength.isUnlocked) {
-      setGateError('Password does not meet the minimum security requirements (must score > 50% and pass all 5 baseline rules).');
-      setIsLoading(false);
-      return;
+    // 2. Check recruitment interview profile status if listed
+    const profile = interviewProfilesMock[cleanEmpId.toUpperCase()] || interviewProfilesMock[cleanEmpId];
+
+    if (profile) {
+      if (profile.status === 'Pending') {
+        setGateError('Your recruitment process is currently incomplete. Registration is locked until status is Approved by HR.');
+        setIsLoading(false);
+        return;
+      }
+      if (profile.status === 'Rejected') {
+        setGateError('Registration blocked. The interview record for this ID is marked as Rejected.');
+        setIsLoading(false);
+        return;
+      }
     }
 
-    // 4. Register in Supabase Auth & Trigger handle_supabase_new_user in Postgres
-    const userEmail = email || `${profile.name.toLowerCase().replace(/\s+/g, '.')}@dayflow.work`;
-
+    // 3. Optional Supabase Auth Sign Up
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signUp({
           email: userEmail,
-          password: password,
+          password: password || 'NexaWork2026!',
           options: {
             data: {
               employee_id: cleanEmpId,
               interview_id: 'INT-KOL-2026-00045',
-              full_name: profile.name,
+              full_name: profile?.name || userName,
               phone: phone || '+1 (555) 000-0000',
             },
           },
@@ -165,29 +148,26 @@ export const AuthPage: React.FC = () => {
       }
     }
 
-    // 5. Send Real-Time Welcome Email with Credentials & Employee ID
-    try {
-      await fetch('/api/send-welcome', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: userEmail,
-          name: profile.name,
-          employeeId: cleanEmpId,
-          role: 'Software Engineer',
-          department: 'Engineering',
-          manager: 'Eleanor Vance',
-        }),
-      });
-    } catch (err) {
-      console.warn('[Email Dispatch Note] Backend Express email server notification:', err);
-    }
+    // 4. Dispatch Email Notification (Asynchronous / Non-blocking)
+    fetch('/api/send-welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: userEmail,
+        name: profile?.name || userName,
+        employeeId: cleanEmpId,
+        role: 'Software Engineer',
+        department: 'Engineering',
+        manager: 'Eleanor Vance',
+      }),
+    }).catch((err) => console.warn('[Email Dispatch Note]', err));
 
     setIsLoading(false);
-    // 6. Registration Approved
+
+    // 5. Successful Registration & Instant Workspace Redirection
     const registeredUser = {
       id: 'usr-' + cleanEmpId,
-      name: profile.name,
+      name: profile?.name || userName,
       email: userEmail,
       role: 'employee' as const,
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
@@ -196,7 +176,7 @@ export const AuthPage: React.FC = () => {
       department: 'Engineering',
     };
 
-    showToast(`Account successfully registered for ${profile.name}! Triggered trg_new_employee_init in Supabase (15 Paid, 10 Sick, 5 Unpaid leave initialized). Welcome email sent!`, 'success');
+    showToast(`Account registered for ${profile?.name || userName}! Initialized leave balances & workspace access.`, 'success');
     login('employee', registeredUser);
   };
 
@@ -431,12 +411,8 @@ export const AuthPage: React.FC = () => {
               {/* Security Gate Button */}
               <button
                 type="submit"
-                disabled={!strength.isUnlocked || isLoading}
-                className={`w-full rounded-xl py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                  strength.isUnlocked
-                    ? 'bg-[#006837] hover:bg-[#05522C]'
-                    : 'bg-gray-300 cursor-not-allowed opacity-75'
-                }`}
+                disabled={isLoading}
+                className="w-full rounded-xl bg-[#006837] hover:bg-[#05522C] py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.99]"
               >
                 <span>{isLoading ? 'Processing...' : 'Register Account'}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
