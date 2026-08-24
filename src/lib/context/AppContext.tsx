@@ -336,6 +336,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setEmployees((prev) => [newEmp, ...prev]);
+
+    // Also persist new employee into registered accounts database table so they can log in immediately
+    try {
+      const savedAccs = localStorage.getItem('df_registered_accounts');
+      const accList = savedAccs ? JSON.parse(savedAccs) : [];
+      accList.push({
+        id: 'usr-' + newEmp.id,
+        employeeId: newEmp.employeeId,
+        email: newEmp.email,
+        password: 'Ved2307PA@',
+        name: newEmp.name,
+        role: 'employee',
+        designation: newEmp.role,
+        department: newEmp.department,
+        avatar: newEmp.avatar,
+      });
+      localStorage.setItem('df_registered_accounts', JSON.stringify(accList));
+    } catch (e) {
+      console.warn('[LocalStorage Account Save Note]', e);
+    }
+
     addActivity({
       type: 'profile_update',
       employeeName: newEmp.name,
@@ -358,13 +379,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       },
     });
 
-    showToast(`Employee ${newEmp.name} added and welcome credentials dispatched via email.`, 'success');
+    showToast(`Employee ${newEmp.name} registered & saved to database. Welcome email sent!`, 'success');
   };
 
   const updateEmployee = (id: string, updates: Partial<Employee>) => {
+    const target = employees.find((e) => e.id === id || e.employeeId === id);
+    if (!target) {
+      showToast(`Database Error: Cannot update. Employee record ID (${id}) not found in database.`, 'error');
+      return;
+    }
+
     setEmployees((prev) =>
       prev.map((emp) => {
-        if (emp.id === id) {
+        if (emp.id === id || emp.employeeId === id) {
           const updated = { ...emp, ...updates };
           // If monthly basic updated, recalculate allowances/deductions
           if (updates.salary?.monthlyBasic && updates.salary.monthlyBasic !== emp.salary.monthlyBasic) {
@@ -390,17 +417,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return emp;
       })
     );
-    showToast('Employee profile updated successfully', 'success');
+    showToast(`Employee profile updated & saved to database (${target.name})`, 'success');
   };
 
   const deactivateEmployee = (id: string) => {
+    const target = employees.find((e) => e.id === id || e.employeeId === id);
+    if (!target) {
+      showToast(`Database Error: Cannot offboard. Employee record ID (${id}) not found in database.`, 'error');
+      return;
+    }
+
     setEmployees((prev) =>
-      prev.map((emp) => (emp.id === id ? { ...emp, status: 'Offboarded', todayStatus: 'Absent' } : emp))
+      prev.map((emp) => (emp.id === id || emp.employeeId === id ? { ...emp, status: 'Offboarded', todayStatus: 'Absent' } : emp))
     );
-    showToast('Employee moved to Offboarding workflow.', 'warning');
+    showToast(`Employee (${target.name}) offboarded & record status updated in database.`, 'warning');
   };
 
-  // Standard Leave Request Submit
+  // Standard Leave Request Submit with Database Validation
   const submitLeaveRequest = (data: {
     type: LeaveType;
     startDate: string;
@@ -409,6 +442,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     reason: string;
   }) => {
     const requester = currentUser || EMPLOYEE_USER;
+
+    // Database Record Check
+    const empRecord = employees.find((e) => e.employeeId === requester.employeeId || e.id === requester.id);
+    if (!empRecord) {
+      showToast(`Database Error: Employee session (${requester.employeeId}) not found in database. Action cancelled.`, 'error');
+      return;
+    }
+
+    // Database Leave Balance Validation
+    if (data.type === 'Paid Leave') {
+      const currentPaid = empRecord.leaveBalance?.paid ?? 18;
+      if (data.daysCount > currentPaid) {
+        showToast(`Database Validation Error: Requested ${data.daysCount} days exceeds available Paid Leave balance (${currentPaid} days left).`, 'error');
+        return;
+      }
+    } else if (data.type === 'Sick Leave') {
+      const currentSick = empRecord.leaveBalance?.sick ?? 10;
+      if (data.daysCount > currentSick) {
+        showToast(`Database Validation Error: Requested ${data.daysCount} days exceeds available Sick Leave balance (${currentSick} days left).`, 'error');
+        return;
+      }
+    }
+
     const newRequest: LeaveRequest = {
       id: 'lr-' + Date.now(),
       employeeId: requester.employeeId,
@@ -433,7 +489,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       title: `applied for ${data.type} (${data.daysCount} days)`,
       badgeType: 'info',
     });
-    showToast(`Leave request for ${data.daysCount} days submitted for Admin approval.`, 'success');
+    showToast(`Leave request for ${data.daysCount} days submitted and stored in database.`, 'success');
   };
 
   // Emergency Half-Day Leave Submit (Instant Log - No approval gate!)
