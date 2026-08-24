@@ -14,6 +14,7 @@ import {
   Users,
   Activity,
   Award,
+  Sparkles,
 } from 'lucide-react';
 import { LeaveRequestModal } from '../../components/leave/LeaveRequestModal';
 import { EmergencyLeaveModal } from '../../components/leave/EmergencyLeaveModal';
@@ -26,6 +27,7 @@ export const EmployeeDashboardPage: React.FC = () => {
     leaveRequests,
     employeeLeaveBalances,
     setCurrentView,
+    setIsCopilotOpen,
     showToast,
     employees,
   } = useApp();
@@ -147,28 +149,45 @@ export const EmployeeDashboardPage: React.FC = () => {
           <ProjectAnalyticsChart />
         </div>
 
-        {/* Middle (3 cols): Reminders & Announcements */}
+        {/* Middle (3 cols): NexaWork Workforce System Notice & Announcements */}
         <div className="lg:col-span-3 rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between">
           <div>
-            <span className="text-xs font-semibold text-[#6B7280]">Announcements & Reminders</span>
-            <h3 className="font-display font-bold text-base text-[#1C1F1E] mt-3">
-              Q4 Performance & Policy Sync
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#6B7280]">System Notice & Policy</span>
+              <span className="rounded-full bg-emerald-50 text-[#006837] text-[10px] font-bold px-2 py-0.5 border border-emerald-200/60">
+                NexaWork Live
+              </span>
+            </div>
+
+            <h3 className="font-display font-bold text-base text-[#1C1F1E] mt-3 leading-snug">
+              Geofenced Attendance & AI HR Copilot Active
             </h3>
             <p className="text-xs text-[#6B7280] mt-1 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-gray-400" />
-              <span>Friday • 03:00 PM EST</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>GPS Radius 50m • Real-Time Sync</span>
             </p>
+
+            <button
+              onClick={() => setIsCopilotOpen(true)}
+              className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#006837] font-bold text-xs border border-emerald-200/60 transition-all cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4 text-[#006837] animate-pulse" />
+              <span>Ask AI HR Copilot</span>
+            </button>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-100 space-y-2">
+          <div className="mt-5 pt-4 border-t border-gray-100 space-y-2">
             <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              Notice Board
+              Workforce Guidelines & Reminders
             </div>
-            <div className="text-xs text-[#1C1F1E] font-medium">
-              • Annual Health Checkup appointments open.
+            <div className="text-xs text-[#1C1F1E] font-medium leading-relaxed">
+              • Emergency Leave Fast-Track enabled for 1-click HR resolution.
             </div>
-            <div className="text-xs text-[#1C1F1E] font-medium">
-              • Remote work guidelines updated for Q4.
+            <div className="text-xs text-[#1C1F1E] font-medium leading-relaxed">
+              • Monthly Automated Payslips published on 30th at 06:00 PM.
+            </div>
+            <div className="text-xs text-[#1C1F1E] font-medium leading-relaxed">
+              • Geofence punch active — verify location before clocking in.
             </div>
           </div>
         </div>

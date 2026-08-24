@@ -197,30 +197,36 @@ export const AdminDashboardPage: React.FC = () => {
           <ProjectAnalyticsChart />
         </div>
 
-        {/* Middle (3 cols): Reminders & Probation/Contract Alerts */}
+        {/* Middle (3 cols): NexaWork HR Operations & Compliance Sync */}
         <div className="lg:col-span-3 rounded-2xl bg-white p-6 border border-gray-100 shadow-2xs flex flex-col justify-between">
           <div>
-            <span className="text-xs font-semibold text-[#6B7280]">Compliance Reminders</span>
-            <h3 className="font-display font-bold text-base text-[#1C1F1E] mt-3">
-              Meeting with Arc Company
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-[#6B7280]">Compliance & Sync</span>
+              <span className="rounded-full bg-emerald-50 text-[#006837] text-[10px] font-bold px-2 py-0.5 border border-emerald-200/60">
+                HR Tower
+              </span>
+            </div>
+
+            <h3 className="font-display font-bold text-base text-[#1C1F1E] mt-3 leading-snug">
+              Weekly HR All-Hands & Recruitment Sync
             </h3>
             <p className="text-xs text-[#6B7280] mt-1 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-gray-400" />
-              <span>Time : 02.00 pm - 04.00 pm</span>
+              <span>Today • 02:00 PM - 03:30 PM</span>
             </p>
 
             <button
               onClick={handleStartMeeting}
-              className="w-full mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#006837] hover:bg-[#05522C] px-4 py-3 text-xs font-bold text-white shadow-2xs transition-all cursor-pointer"
+              className="w-full mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#006837] hover:bg-[#05522C] px-4 py-2.5 text-xs font-bold text-white shadow-2xs transition-all cursor-pointer"
             >
               <Video className="w-4 h-4 text-emerald-300" />
-              <span>Start Meeting</span>
+              <span>Start All-Hands Sync</span>
             </button>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-100 space-y-2">
+          <div className="mt-5 pt-4 border-t border-gray-100 space-y-2">
             <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              Contract & Probation Alerts
+              HR Compliance & Audit Alerts
             </div>
             {reminders.slice(0, 3).map((item) => (
               <div key={item.id} className="text-xs text-[#1C1F1E] flex items-center justify-between py-1">
