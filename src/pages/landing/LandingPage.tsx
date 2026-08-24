@@ -180,9 +180,15 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Impact Strip */}
+      {/* 2. Impact Strip with Scroll Motion */}
       <section id="impact" className="bg-[#006837] text-white py-10 px-4 sm:px-8 lg:px-12">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x divide-white/15">
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x divide-white/15"
+        >
           <div className="pt-2 sm:pt-0">
             <div className="font-display text-4xl font-extrabold tracking-tight text-white">48.5 hrs</div>
             <div className="text-xs text-emerald-200 font-medium mt-1">
@@ -201,13 +207,19 @@ export const LandingPage: React.FC = () => {
               Missed tax withholding or compliance deadlines
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 3. Creative & Informal "A Workday with NexaWork" Interactive Experience */}
       <section id="experience" className="py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-12">
         {/* Section Header with Doodle Badges & Arrow Highlights */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto space-y-4 relative"
+        >
           <div className="inline-flex items-center gap-2 rounded-full bg-[#EBF5F0] px-4 py-1.5 text-xs font-bold text-[#006837] border border-emerald-300/60 shadow-2xs transform -rotate-1">
             <Zap className="w-4 h-4 text-[#006837] animate-pulse" />
             <span>Frankly Speaking • No Boring Sales Pitch</span>
@@ -228,7 +240,7 @@ export const LandingPage: React.FC = () => {
           <div className="hidden md:flex items-center justify-center gap-2 text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-3.5 py-1.5 rounded-xl border border-emerald-200 w-fit mx-auto transform rotate-2">
             <span>↳ Click any timeline step to test the live simulator!</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Timeline Interactive Pill Navigation */}
         <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">
@@ -509,7 +521,13 @@ export const LandingPage: React.FC = () => {
         </div>
 
         {/* 4. "Frankly Speaking: Traditional HR vs NexaWork" Visual Comparison */}
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 pt-6"
+        >
           {/* Old Way */}
           <div className="rounded-3xl bg-rose-50/70 p-6 sm:p-8 border border-rose-200 space-y-4 relative">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-rose-200 text-rose-900 font-bold text-xs px-3.5 py-1">
@@ -563,12 +581,18 @@ export const LandingPage: React.FC = () => {
               </li>
             </ul>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* 4. Client & Enterprise Testimonials Wall */}
+      {/* 5. Client & Enterprise Testimonials Wall */}
       <section id="testimonials" className="bg-white py-20 px-4 sm:px-8 lg:px-12 border-y border-gray-200">
-        <div className="max-w-[1400px] mx-auto space-y-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-[1400px] mx-auto space-y-12"
+        >
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#006837]">
               <Star className="w-3.5 h-3.5 fill-current" />
@@ -640,7 +664,7 @@ export const LandingPage: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 5. Rich Multi-Column Footer */}

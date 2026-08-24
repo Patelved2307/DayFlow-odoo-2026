@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { LeaveRequestModal } from '../../components/leave/LeaveRequestModal';
 import { EmergencyLeaveModal } from '../../components/leave/EmergencyLeaveModal';
+import { motion } from 'framer-motion';
 
 export const EmployeeDashboardPage: React.FC = () => {
   const {
@@ -52,7 +53,12 @@ export const EmployeeDashboardPage: React.FC = () => {
   const totalBalanceRemaining = balances.paid + balances.sick;
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -299,6 +305,6 @@ export const EmployeeDashboardPage: React.FC = () => {
         isOpen={isEmergencyModalOpen}
         onClose={() => setIsEmergencyModalOpen(false)}
       />
-    </div>
+    </motion.div>
   );
 };

@@ -27,6 +27,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 
+import { motion } from 'framer-motion';
+
 export const AdminDashboardPage: React.FC = () => {
   const {
     employees,
@@ -85,7 +87,12 @@ export const AdminDashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -412,6 +419,6 @@ export const AdminDashboardPage: React.FC = () => {
         isOpen={isAddEmployeeOpen}
         onClose={() => setIsAddEmployeeOpen(false)}
       />
-    </div>
+    </motion.div>
   );
 };
