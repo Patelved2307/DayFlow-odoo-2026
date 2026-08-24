@@ -77,14 +77,16 @@ export const Topbar: React.FC = () => {
               <span className="text-[11px] text-gray-400 leading-none">{userEmail}</span>
             </div>
 
-            {/* Quick Role Switcher Button */}
-            <button
-              onClick={() => switchRole(currentUser?.role === 'admin' ? 'employee' : 'admin')}
-              className="ml-1 text-[10px] font-bold text-[#006837] bg-emerald-50 hover:bg-emerald-100 px-2 py-1 rounded-lg transition-colors cursor-pointer"
-              title="Switch between Admin & Employee portals"
+            {/* RBAC Role Indicator Badge */}
+            <span
+              className={`ml-1 text-[10px] font-bold px-2 py-1 rounded-lg border ${
+                currentUser?.role === 'admin'
+                  ? 'text-[#006837] bg-emerald-50 border-emerald-200'
+                  : 'text-blue-700 bg-blue-50 border-blue-200'
+              }`}
             >
-              {currentUser?.role === 'admin' ? 'HR Admin' : 'Staff'}
-            </button>
+              {currentUser?.role === 'admin' ? 'HR Administrator' : 'Employee Staff'}
+            </span>
           </div>
         </div>
       </header>

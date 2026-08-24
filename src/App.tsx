@@ -30,7 +30,10 @@ import { PayslipPage } from './pages/employee/PayslipPage';
 import { EmployeeSettingsPage } from './pages/employee/EmployeeSettingsPage';
 
 export default function App() {
-  const { currentView } = useApp();
+  const { currentView, currentUser } = useApp();
+
+  const isAdmin = currentUser?.role === 'admin';
+  const isEmployee = currentUser?.role === 'employee';
 
   // Public Full-Page Views
   if (currentView === 'landing') {
@@ -41,10 +44,20 @@ export default function App() {
     return <AuthPage />;
   }
 
-  // Render Role-Based Pages inside PageShell
+  // Render Role-Based Pages inside PageShell with strict RBAC Guards
   const renderAppContent = () => {
+    // RBAC Guard 1: Employees cannot access admin views
+    if (isEmployee && currentView.startsWith('admin-')) {
+      return <EmployeeDashboardPage />;
+    }
+
+    // RBAC Guard 2: Admins cannot access employee views
+    if (isAdmin && currentView.startsWith('emp-')) {
+      return <AdminDashboardPage />;
+    }
+
     switch (currentView) {
-      // Admin Views
+      // Admin Views (Visible strictly to HR Admins)
       case 'admin-dashboard':
         return <AdminDashboardPage />;
       case 'admin-employees':
@@ -62,7 +75,7 @@ export default function App() {
       case 'admin-settings':
         return <AdminSettingsPage />;
 
-      // Employee Views
+      // Employee Views (Visible strictly to Staff)
       case 'emp-dashboard':
         return <EmployeeDashboardPage />;
       case 'emp-profile':
@@ -77,7 +90,7 @@ export default function App() {
         return <EmployeeSettingsPage />;
 
       default:
-        return <LandingPage />;
+        return isAdmin ? <AdminDashboardPage /> : <EmployeeDashboardPage />;
     }
   };
 
