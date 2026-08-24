@@ -116,36 +116,37 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const safeParse = (key: string, fallback: any) => {
+    try {
+      const saved = localStorage.getItem(key);
+      if (!saved) return fallback;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(fallback) && !Array.isArray(parsed) ? fallback : parsed;
+    } catch {
+      return fallback;
+    }
+  };
+
   // Start on landing page by default until user clicks Login/Sign Up and authenticates
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentView, setCurrentView] = useState<AppView>('landing');
+  const [currentUser, setCurrentUser] = useState<User | null>(() => safeParse('df_user', null));
+  const [currentView, setCurrentView] = useState<AppView>(() => safeParse('df_view', 'landing'));
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>('emp-104');
 
   const navigateToAuth = (mode: 'signin' | 'signup' = 'signin') => {
     setAuthMode(mode);
     setCurrentView('auth');
+    try {
+      localStorage.setItem('df_view', 'auth');
+    } catch (e) {
+      console.warn('[LocalStorage Error]', e);
+    }
   };
   
-  const [employees, setEmployees] = useState<Employee[]>(() => {
-    const saved = localStorage.getItem('df_employees');
-    return saved ? JSON.parse(saved) : INITIAL_EMPLOYEES;
-  });
-
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>(() => {
-    const saved = localStorage.getItem('df_leave_requests');
-    return saved ? JSON.parse(saved) : INITIAL_LEAVE_REQUESTS;
-  });
-
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(() => {
-    const saved = localStorage.getItem('df_attendance');
-    return saved ? JSON.parse(saved) : INITIAL_ATTENDANCE_RECORDS;
-  });
-
-  const [payslips, setPayslips] = useState<Payslip[]>(() => {
-    const saved = localStorage.getItem('df_payslips');
-    return saved ? JSON.parse(saved) : INITIAL_PAYSLIPS;
-  });
+  const [employees, setEmployees] = useState<Employee[]>(() => safeParse('df_employees', INITIAL_EMPLOYEES));
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>(() => safeParse('df_leave_requests', INITIAL_LEAVE_REQUESTS));
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(() => safeParse('df_attendance', INITIAL_ATTENDANCE_RECORDS));
+  const [payslips, setPayslips] = useState<Payslip[]>(() => safeParse('df_payslips', INITIAL_PAYSLIPS));
 
   const [activities, setActivities] = useState<ActivityItem[]>(INITIAL_ACTIVITIES);
   const [reminders, setReminders] = useState<ReminderItem[]>(INITIAL_REMINDERS);
@@ -251,21 +252,36 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const login = (role: UserRole, customUser?: User) => {
+    let userToSet: User;
+    let viewToSet: AppView;
     if (role === 'admin') {
-      setCurrentUser(ADMIN_USER);
-      setCurrentView('admin-dashboard');
+      userToSet = ADMIN_USER;
+      viewToSet = 'admin-dashboard';
       showToast('Signed in as HR Administrator (Eleanor Vance)', 'success');
     } else {
-      const userToSet = customUser || EMPLOYEE_USER;
-      setCurrentUser(userToSet);
-      setCurrentView('emp-dashboard');
+      userToSet = customUser || EMPLOYEE_USER;
+      viewToSet = 'emp-dashboard';
       showToast(`Signed in as ${userToSet.name}`, 'success');
+    }
+    setCurrentUser(userToSet);
+    setCurrentView(viewToSet);
+    try {
+      localStorage.setItem('df_user', JSON.stringify(userToSet));
+      localStorage.setItem('df_view', viewToSet);
+    } catch (e) {
+      console.warn('[LocalStorage Error]', e);
     }
   };
 
   const logout = () => {
     setCurrentUser(null);
     setCurrentView('landing');
+    try {
+      localStorage.removeItem('df_user');
+      localStorage.setItem('df_view', 'landing');
+    } catch (e) {
+      console.warn('[LocalStorage Error]', e);
+    }
     showToast('Signed out successfully', 'info');
   };
 
