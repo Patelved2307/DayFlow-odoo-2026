@@ -298,6 +298,37 @@ export const AuthPage: React.FC = () => {
                 <span>{isLoading ? 'Authenticating...' : 'Sign In to Workspace'}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
               </button>
+
+              {/* Quick 1-Click Role Direct Logins */}
+              <div className="pt-2 border-t border-gray-200/80 space-y-2">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400 text-center">
+                  Quick Demo Access
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      login('admin');
+                      showToast('Logged in as HR Administrator (Eleanor Vance)', 'success');
+                    }}
+                    className="py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[#006837] text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>HR Admin</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      login('employee');
+                      showToast('Logged in as Staff (Patel Ved)', 'success');
+                    }}
+                    className="py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>Staff Member</span>
+                  </button>
+                </div>
+              </div>
             </form>
           ) : (
             /* Registration Form with Database Recruitment Gate & Password Strength Engine */
