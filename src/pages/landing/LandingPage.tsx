@@ -26,7 +26,10 @@ import {
   DollarSign,
   XCircle,
   Zap,
+  Home,
+  Lock,
 } from 'lucide-react';
+import { NavBar } from '../../components/ui/tubelight-navbar';
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, login, showToast, navigateToAuth } = useApp();
@@ -66,8 +69,19 @@ export const LandingPage: React.FC = () => {
     setNewsletterEmail('');
   };
 
+  const tubelightNavItems = [
+    { name: 'Home', url: '#hero', icon: Home, onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+    { name: 'Workday', url: '#experience', icon: Zap, onClick: () => document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }) },
+    { name: 'Impact', url: '#impact', icon: Award, onClick: () => document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' }) },
+    { name: 'Feedback', url: '#testimonials', icon: Star, onClick: () => document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' }) },
+    { name: 'Portal', url: '#auth', icon: Lock, onClick: () => navigateToAuth('signin') },
+  ];
+
   return (
     <div className="min-h-screen bg-[#F4F6F5] text-[#1C1F1E] font-sans selection:bg-emerald-200 selection:text-[#006837]">
+      {/* Floating Tubelight Navbar */}
+      <NavBar items={tubelightNavItems} />
+
       {/* Navigation Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 lg:px-12 py-3.5">
         <div className="max-w-[1400px] mx-auto w-full flex items-center justify-between">
