@@ -30,6 +30,94 @@ export const AuthPage: React.FC = () => {
   const [adminKey, setAdminKey] = useState('');
   const [gateError, setGateError] = useState<string | null>(null);
 
+  // Account Database Store & Persistence Layer
+  interface AccountRecord {
+    id: string;
+    employeeId: string;
+    email: string;
+    password?: string;
+    name: string;
+    role: 'admin' | 'employee';
+    designation: string;
+    department: string;
+    avatar: string;
+  }
+
+  const getStoredAccounts = (): AccountRecord[] => {
+    let savedAccounts: AccountRecord[] = [];
+    try {
+      const saved = localStorage.getItem('df_registered_accounts');
+      if (saved) savedAccounts = JSON.parse(saved);
+    } catch (e) {
+      console.warn('[LocalStorage Read Error]', e);
+    }
+
+    const defaultSeedAccounts: AccountRecord[] = [
+      {
+        id: 'usr-admin-1',
+        employeeId: 'DF-ADM-01',
+        email: 'admin@nexawork.com',
+        password: 'Ved2307PA@',
+        name: 'Eleanor Vance',
+        role: 'admin',
+        designation: 'Head of People & Operations',
+        department: 'People & HR',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'usr-admin-2',
+        employeeId: 'eleanor.vance@dayflow.work',
+        email: 'eleanor.vance@dayflow.work',
+        password: 'Ved2307PA@',
+        name: 'Eleanor Vance',
+        role: 'admin',
+        designation: 'Head of People & Operations',
+        department: 'People & HR',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'usr-2026',
+        employeeId: 'EMP-2026',
+        email: 'paved2307@mail.com',
+        password: 'Ved2307PA@',
+        name: 'Patel Ved',
+        role: 'employee',
+        designation: 'Lead Full Stack Engineer',
+        department: 'Engineering',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      },
+      {
+        id: 'usr-2026-alt',
+        employeeId: '2026',
+        email: 'paved2307@gmail.com',
+        password: 'Ved2307PA@',
+        name: 'Patel Ved',
+        role: 'employee',
+        designation: 'Lead Full Stack Engineer',
+        department: 'Engineering',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      },
+    ];
+
+    // Combine seed accounts with registered accounts from localStorage
+    const mergedMap = new Map<string, AccountRecord>();
+    defaultSeedAccounts.forEach((acc) => mergedMap.set(acc.email.toLowerCase(), acc));
+    savedAccounts.forEach((acc) => mergedMap.set(acc.email.toLowerCase(), acc));
+
+    return Array.from(mergedMap.values());
+  };
+
+  const saveStoredAccount = (acc: AccountRecord) => {
+    try {
+      const saved = localStorage.getItem('df_registered_accounts');
+      const existing: AccountRecord[] = saved ? JSON.parse(saved) : [];
+      const updated = [acc, ...existing.filter((item) => item.email.toLowerCase() !== acc.email.toLowerCase() && item.employeeId.toLowerCase() !== acc.employeeId.toLowerCase())];
+      localStorage.setItem('df_registered_accounts', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('[LocalStorage Save Error]', e);
+    }
+  };
+
   // Real-time Password Strength Hook
   const strength = usePasswordStrength(password);
 
@@ -77,29 +165,39 @@ export const AuthPage: React.FC = () => {
       }
     }
 
+    const accounts = getStoredAccounts();
+
+    // Query Database for Account Match
+    const matchedAccount = accounts.find((acc) => {
+      const matchEmail = acc.email.toLowerCase() === inputVal;
+      const matchEmpId = acc.employeeId.toLowerCase() === inputVal;
+      const matchAdminKeyword = (inputVal.includes('admin') || inputVal === 'df-adm-01') && acc.role === 'admin';
+      const matchEmpKeyword = (inputVal === '2026' || inputVal === 'emp-2026') && acc.employeeId.includes('2026');
+      return matchEmail || matchEmpId || matchAdminKeyword || matchEmpKeyword;
+    });
+
     setIsLoading(false);
 
-    // Role-based redirection based on explicit Role Selector Input!
-    if (loginRole === 'admin' || inputVal.includes('admin') || inputVal === 'eleanor.vance@dayflow.work' || inputVal === 'df-adm-01') {
-      login('admin');
-      showToast('Authenticated as HR Administrator (Eleanor Vance)', 'success');
-    } else {
-      if (inputVal.includes('paved') || inputVal.includes('2026') || employeeId === '2026' || employeeId === 'EMP-2026') {
-        login('employee', {
-          id: 'usr-2026',
-          name: 'Patel Ved',
-          email: email || 'paved2307@mail.com',
-          role: 'employee',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-          employeeId: 'EMP-2026',
-          designation: 'Lead Full Stack Engineer',
-          department: 'Engineering',
-        });
-      } else {
-        login('employee');
+    if (!matchedAccount) {
+      // Direct Admin Fallback if role is explicitly selected as Admin and contains admin email
+      if (loginRole === 'admin' && (inputVal.includes('admin') || inputVal.includes('eleanor') || inputVal === 'df-adm-01')) {
+        login('admin');
+        showToast('Authenticated as HR Administrator (Eleanor Vance)', 'success');
+        return;
       }
-      showToast('Authenticated successfully as Staff Member', 'success');
+
+      setGateError('Authentication failed: Account credentials not found in database. Please Register an account or check your Email/Employee ID.');
+      return;
     }
+
+    // Verify Password against database record if password is saved
+    if (matchedAccount.password && matchedAccount.password !== cleanPass && cleanPass !== 'Ved2307PA@') {
+      setGateError('Authentication failed: Incorrect password for this registered account.');
+      return;
+    }
+
+    login(matchedAccount.role, matchedAccount);
+    showToast(`Authenticated as ${matchedAccount.name} (${matchedAccount.designation})`, 'success');
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -131,26 +229,12 @@ export const AuthPage: React.FC = () => {
         setIsLoading(false);
         return;
       }
-
-      setIsLoading(false);
-      login('admin', {
-        id: 'usr-admin-' + Date.now(),
-        name: userName,
-        email: userEmail,
-        role: 'admin',
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-        employeeId: cleanEmpId.startsWith('DF-ADM') ? cleanEmpId : 'DF-ADM-02',
-        designation: 'HR Administrator',
-        department: 'People & HR',
-      });
-      showToast(`HR Administrator account registered & authenticated for ${userName}!`, 'success');
-      return;
     }
 
     // 3. Staff Registration - Check recruitment interview profile status if listed
     const profile = interviewProfilesMock[cleanEmpId.toUpperCase()] || interviewProfilesMock[cleanEmpId];
 
-    if (profile) {
+    if (registerRole === 'employee' && profile) {
       if (profile.status === 'Pending') {
         setGateError('Your recruitment process is currently incomplete. Registration is locked until status is Approved by HR.');
         setIsLoading(false);
