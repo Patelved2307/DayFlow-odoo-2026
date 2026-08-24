@@ -16,9 +16,10 @@ interface NavBarProps {
   items: NavItem[]
   className?: string
   activeItem?: string
+  isInline?: boolean
 }
 
-export function NavBar({ items, className, activeItem }: NavBarProps) {
+export function NavBar({ items, className, activeItem, isInline = false }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(activeItem || items[0].name)
 
   useEffect(() => {
@@ -30,11 +31,11 @@ export function NavBar({ items, className, activeItem }: NavBarProps) {
   return (
     <div
       className={cn(
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50",
+        isInline ? "relative z-10 flex items-center justify-center" : "fixed top-4 left-1/2 -translate-x-1/2 z-50",
         className,
       )}
     >
-      <div className="flex items-center gap-1.5 sm:gap-3 bg-white/90 dark:bg-[#0A1A14]/90 border border-emerald-900/15 dark:border-emerald-500/20 backdrop-blur-xl py-1.5 px-2 rounded-full shadow-xl">
+      <div className="flex items-center gap-1 sm:gap-2 bg-gray-100/90 dark:bg-[#0E291D]/90 border border-gray-200 dark:border-emerald-500/25 backdrop-blur-xl py-1 px-1.5 rounded-full shadow-inner">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
@@ -51,17 +52,17 @@ export function NavBar({ items, className, activeItem }: NavBarProps) {
                 }
               }}
               className={cn(
-                "relative cursor-pointer text-xs sm:text-sm font-bold px-3.5 sm:px-5 py-2 rounded-full transition-colors flex items-center gap-2 select-none",
-                "text-gray-700 dark:text-emerald-100/90 hover:text-[#006837] dark:hover:text-emerald-300",
-                isActive && "bg-emerald-50 dark:bg-emerald-950/60 text-[#006837] dark:text-emerald-300",
+                "relative cursor-pointer text-xs sm:text-sm font-bold px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full transition-colors flex items-center gap-2 select-none",
+                "text-gray-600 dark:text-emerald-100/80 hover:text-[#006837] dark:hover:text-emerald-300",
+                isActive && "bg-white dark:bg-[#006837] text-[#006837] dark:text-white shadow-xs",
               )}
             >
-              <Icon size={16} strokeWidth={2.2} className={isActive ? "text-[#006837] dark:text-[#7EC9A0]" : "text-gray-500 dark:text-emerald-400/70"} />
+              <Icon size={15} strokeWidth={2.2} className={isActive ? "text-[#006837] dark:text-white" : "text-gray-400 dark:text-emerald-400/70"} />
               <span className="hidden sm:inline">{item.name}</span>
               {isActive && (
                 <motion.div
                   layoutId="lamp"
-                  className="absolute inset-0 w-full bg-[#006837]/10 dark:bg-[#7EC9A0]/15 rounded-full -z-10"
+                  className="absolute inset-0 w-full bg-[#006837]/10 dark:bg-white/10 rounded-full -z-10"
                   initial={false}
                   transition={{
                     type: "spring",

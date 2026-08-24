@@ -79,32 +79,30 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F4F6F5] text-[#1C1F1E] font-sans selection:bg-emerald-200 selection:text-[#006837]">
-      {/* Floating Tubelight Navbar */}
-      <NavBar items={tubelightNavItems} />
-
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 lg:px-12 py-3.5">
-        <div className="max-w-[1400px] mx-auto w-full flex items-center justify-between">
-          <div onClick={() => setCurrentView('landing')} className="cursor-pointer">
+      {/* Unified Single Navbar with Integrated Tubelight Nav & Login/Sign Up */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-8 lg:px-12 py-2.5 shadow-2xs">
+        <div className="max-w-[1400px] mx-auto w-full flex items-center justify-between gap-4">
+          {/* Brand Logo */}
+          <div onClick={() => setCurrentView('landing')} className="cursor-pointer shrink-0">
             <NexaWorkLogo size="md" showTagline={true} />
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#6B7280]">
-            <a href="#gallery" className="hover:text-[#006837] transition-colors">Workplace Culture</a>
-            <a href="#impact" className="hover:text-[#006837] transition-colors">Impact & Stats</a>
-            <a href="#testimonials" className="hover:text-[#006837] transition-colors">Enterprise Trust</a>
-          </nav>
+          {/* Center Integrated Tubelight Navbar */}
+          <div className="flex items-center justify-center">
+            <NavBar items={tubelightNavItems} isInline={true} />
+          </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               onClick={() => navigateToAuth('signin')}
-              className="rounded-xl border border-gray-300 hover:border-gray-400 bg-white px-4 py-2 text-xs font-semibold text-[#1C1F1E] transition-colors cursor-pointer"
+              className="rounded-full border border-gray-300 hover:border-gray-400 bg-white px-4 py-1.5 text-xs font-bold text-[#1C1F1E] transition-colors cursor-pointer shadow-2xs hover:shadow-xs"
             >
               Login
             </button>
             <button
               onClick={() => navigateToAuth('signup')}
-              className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-4.5 py-2 text-xs font-bold text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+              className="rounded-full bg-[#006837] hover:bg-[#05522C] px-4.5 py-1.5 text-xs font-bold text-white shadow-md transition-all cursor-pointer flex items-center gap-1.5 active:scale-95"
             >
               <span>Sign Up</span>
               <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
