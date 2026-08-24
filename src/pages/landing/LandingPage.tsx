@@ -31,11 +31,11 @@ export const LandingPage: React.FC = () => {
   const galleryImages = [
     {
       id: 'g-1',
-      title: 'Engineering Innovation Hub',
+      title: 'Eco-Friendly Biophilic Workspace Hub',
       category: 'tech',
-      location: 'San Francisco HQ',
-      image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80',
-      description: 'Our engineering team collaborating during the quarterly NexaWork product hackathon.',
+      location: 'NexaWork Headquarters',
+      image: '/assets/office-hero.jpg',
+      description: 'Lush greenery, ergonomic pods, and eco-friendly workspace designed for high-performance workforce alignment.',
     },
     {
       id: 'g-2',
@@ -137,20 +137,20 @@ export const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      {/* 1. Page-Native Video Hero Section (Centered Layout, High-Converting Hero Hierarchy) */}
+      {/* 1. Page-Native Eco-Workspace Hero Section */}
       <section className="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden bg-[#0A1A14] text-white px-4 sm:px-8 lg:px-12 py-16 border-b border-emerald-950">
         
-        {/* Corporate Office Workspace Image with Employees Working */}
+        {/* Integrated Eco-Friendly Modern Office Workspace Image */}
         <img
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=2400"
-          alt="NexaWork Office Workspace & Employees Working"
-          className="absolute inset-0 h-full w-full object-cover scale-105 transition-all duration-1000 brightness-[0.65]"
+          src="/assets/office-hero.jpg"
+          alt="NexaWork Eco-Friendly Office Workspace & Workforce Hub"
+          className="absolute inset-0 h-full w-full object-cover scale-105 transition-all duration-1000 brightness-[0.72] contrast-[1.05]"
         />
 
-        {/* Noise Texture & Glow Overlays */}
-        <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.45] mix-blend-overlay z-1" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0A1A14]/90 via-[#0A1A14]/50 to-[#0A1A14] z-1" />
-        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#006837]/25 rounded-full blur-3xl animate-pulse z-1" />
+        {/* Brand Theme Overlay Gradients (Align Green & Dark Forest Overlay) */}
+        <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.40] mix-blend-overlay z-1" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0A1A14]/85 via-[#0A1A14]/45 to-[#0A1A14] z-1" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#006837]/30 rounded-full blur-3xl animate-pulse z-1" />
 
         {/* Main Hero Content Container (Centered) */}
         <div className="relative z-10 max-w-4xl w-full mx-auto text-center space-y-8 my-auto pt-6">
