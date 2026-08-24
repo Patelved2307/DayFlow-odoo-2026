@@ -6,6 +6,7 @@
 import React from 'react';
 import { useApp } from './lib/context/AppContext';
 import { PageShell } from './components/layout/PageShell';
+import { TargetCursor } from './components/ui/TargetCursor';
 
 // Public Pages
 import { LandingPage } from './pages/landing/LandingPage';
@@ -35,16 +36,6 @@ export default function App() {
   const isAdmin = currentUser?.role === 'admin';
   const isEmployee = currentUser?.role === 'employee';
 
-  // Public Full-Page Views
-  if (currentView === 'landing') {
-    return <LandingPage />;
-  }
-
-  if (currentView === 'auth') {
-    return <AuthPage />;
-  }
-
-  // Render Role-Based Pages inside PageShell with strict RBAC Guards
   const renderAppContent = () => {
     // RBAC Guard 1: Employees cannot access admin views
     if (isEmployee && currentView.startsWith('admin-')) {
@@ -94,5 +85,27 @@ export default function App() {
     }
   };
 
-  return <PageShell>{renderAppContent()}</PageShell>;
+  const renderMainView = () => {
+    if (currentView === 'landing') {
+      return <LandingPage />;
+    }
+
+    if (currentView === 'auth') {
+      return <AuthPage />;
+    }
+
+    return <PageShell>{renderAppContent()}</PageShell>;
+  };
+
+  return (
+    <>
+      <TargetCursor
+        targetSelector=".cursor-target, button, a, [role='button']"
+        spinDuration={2.5}
+        cursorColor="#006837"
+        cursorColorOnTarget="#7EC9A0"
+      />
+      {renderMainView()}
+    </>
+  );
 }
