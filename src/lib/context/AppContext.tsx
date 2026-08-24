@@ -14,6 +14,11 @@ import {
 } from '../../types';
 import { sendAutomatedEmail } from '../services/emailService';
 import {
+  syncEmployeeToSupabase,
+  syncLeaveRequestToSupabase,
+  syncAttendanceToSupabase,
+} from '../services/supabaseSyncService';
+import {
   ADMIN_USER,
   EMPLOYEE_USER,
   INITIAL_EMPLOYEES,
@@ -305,6 +310,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         } catch (e) {
           console.warn('[LocalStorage Sync Note]', e);
         }
+
+        // Sync directly to Supabase cloud table!
+        syncEmployeeToSupabase(newEmpRecord);
+
         return updated;
       });
     }
@@ -380,6 +389,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setEmployees((prev) => [newEmp, ...prev]);
+
+    // Sync to Supabase Cloud Database!
+    syncEmployeeToSupabase(newEmp);
 
     // Also persist new employee into registered accounts database table so they can log in immediately
     try {
@@ -526,6 +538,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setLeaveRequests((prev) => [newRequest, ...prev]);
+    syncLeaveRequestToSupabase(newRequest);
     addActivity({
       type: 'leave_applied',
       employeeName: requester.name,
