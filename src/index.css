@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @theme {
   --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
@@ -17,6 +18,22 @@
   --color-amber-light: #FEF6EC;
   --color-rose-error: #E5484D;
   --color-rose-light: #FDEEEE;
+}
+
+@theme inline {
+  --color-destructive-foreground: var(--destructive-foreground);
+}
+
+:root {
+  --radius: 1rem;
+  --accent: oklch(0.89 0 0);
+  --destructive-foreground: oklch(0.985 0 0);
+}
+
+.dark {
+  --background: oklch(0.125 0 0);
+  --accent: oklch(0.229 0 0);
+  --destructive-foreground: oklch(0.985 0 0);
 }
 
 /* Custom scrollbar and aesthetics */
@@ -45,4 +62,9 @@
 
 .font-sans {
   font-family: var(--font-sans);
+}
+
+.noise-overlay {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 0);
+  background-size: 16px 16px;
 }

@@ -53,6 +53,9 @@ interface AppContextType {
   currentUser: User | null;
   currentView: AppView;
   setCurrentView: (view: AppView) => void;
+  authMode: 'signin' | 'signup';
+  setAuthMode: (mode: 'signin' | 'signup') => void;
+  navigateToAuth: (mode?: 'signin' | 'signup') => void;
   selectedEmployeeId: string | null;
   setSelectedEmployeeId: (id: string | null) => void;
   login: (role: UserRole, customUser?: User) => void;
@@ -116,7 +119,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Start on landing page by default until user clicks Login/Sign Up and authenticates
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<AppView>('landing');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>('emp-104');
+
+  const navigateToAuth = (mode: 'signin' | 'signup' = 'signin') => {
+    setAuthMode(mode);
+    setCurrentView('auth');
+  };
   
   const [employees, setEmployees] = useState<Employee[]>(() => {
     const saved = localStorage.getItem('df_employees');
@@ -745,6 +754,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         currentUser,
         currentView,
         setCurrentView,
+        authMode,
+        setAuthMode,
+        navigateToAuth,
         selectedEmployeeId,
         setSelectedEmployeeId,
         login,

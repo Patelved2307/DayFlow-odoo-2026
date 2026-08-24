@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { AICopilotModal } from './AICopilotModal';
+import { NexaWorkDock } from '../dashboard/NexaWorkDock';
 import { useApp } from '../../lib/context/AppContext';
 import { CheckCircle2, AlertTriangle, AlertCircle, Info, X } from 'lucide-react';
 
@@ -13,7 +14,7 @@ export const PageShell: React.FC<PageShellProps> = ({ children }) => {
   const { toasts, removeToast } = useApp();
 
   return (
-    <div className="min-h-screen bg-[#F4F6F5] flex font-sans">
+    <div className="min-h-screen bg-[#F4F6F5] flex font-sans relative pb-20">
       {/* Sidebar */}
       <Sidebar />
 
@@ -22,10 +23,13 @@ export const PageShell: React.FC<PageShellProps> = ({ children }) => {
         <Topbar />
 
         {/* Content View Area */}
-        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6 pb-12">
           {children}
         </main>
       </div>
+
+      {/* Interactive Apple-Style NexaWork Dock */}
+      <NexaWorkDock />
 
       {/* Global AI Copilot */}
       <AICopilotModal />

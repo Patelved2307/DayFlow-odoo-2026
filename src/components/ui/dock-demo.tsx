@@ -1,0 +1,83 @@
+import {
+  Activity,
+  Component,
+  HomeIcon,
+  Mail,
+  Package,
+  ScrollText,
+  SunMoon,
+} from 'lucide-react';
+
+import { Dock, DockIcon, DockItem, DockLabel } from '@/components/ui/dock';
+
+const data = [
+  {
+    title: 'Home',
+    icon: (
+      <HomeIcon className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+  {
+    title: 'Products',
+    icon: (
+      <Package className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+  {
+    title: 'Components',
+    icon: (
+      <Component className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+  {
+    title: 'Activity',
+    icon: (
+      <Activity className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+  {
+    title: 'Change Log',
+    icon: (
+      <ScrollText className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+  {
+    title: 'Email',
+    icon: (
+      <Mail className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+  {
+    title: 'Theme',
+    icon: (
+      <SunMoon className='h-full w-full text-neutral-600 dark:text-neutral-300' />
+    ),
+    href: '#',
+  },
+];
+
+export function AppleStyleDock() {
+  return (
+    <div className='fixed bottom-4 left-1/2 max-w-full -translate-x-1/2 z-50'>
+      <Dock className='items-end pb-3 shadow-2xl border border-gray-200/80 bg-white/90 backdrop-blur-lg dark:bg-neutral-900/90 dark:border-neutral-800'>
+        {data.map((item, idx) => (
+          <DockItem
+            key={idx}
+            className='aspect-square rounded-full bg-gray-100 hover:bg-emerald-50 dark:bg-neutral-800 transition-colors'
+          >
+            <DockLabel>{item.title}</DockLabel>
+            <DockIcon>{item.icon}</DockIcon>
+          </DockItem>
+        ))}
+      </Dock>
+    </div>
+  );
+}
+
+export default AppleStyleDock;

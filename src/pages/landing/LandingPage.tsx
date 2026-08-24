@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useApp } from '../../lib/context/AppContext';
 import { NexaWorkLogo } from '../../components/layout/NexaWorkLogo';
 import { sendAutomatedEmail } from '../../lib/services/emailService';
+import { WordsPullUp } from '../../components/ui/prisma-hero';
 import {
   Sparkles,
   ArrowRight,
@@ -21,7 +23,7 @@ import {
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
-  const { setCurrentView, login, showToast } = useApp();
+  const { setCurrentView, login, showToast, navigateToAuth } = useApp();
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [activeGalleryTab, setActiveGalleryTab] = useState<'all' | 'culture' | 'tech' | 'leadership'>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -105,8 +107,8 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F4F6F5] text-[#1C1F1E] font-sans selection:bg-emerald-200 selection:text-[#006837]">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 sm:px-8 lg:px-12 py-3.5">
+        <div className="max-w-[1400px] mx-auto w-full flex items-center justify-between">
           <div onClick={() => setCurrentView('landing')} className="cursor-pointer">
             <NexaWorkLogo size="md" showTagline={true} />
           </div>
@@ -119,13 +121,13 @@ export const LandingPage: React.FC = () => {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setCurrentView('auth')}
+              onClick={() => navigateToAuth('signin')}
               className="rounded-xl border border-gray-300 hover:border-gray-400 bg-white px-4 py-2 text-xs font-semibold text-[#1C1F1E] transition-colors cursor-pointer"
             >
               Login
             </button>
             <button
-              onClick={() => setCurrentView('auth')}
+              onClick={() => navigateToAuth('signup')}
               className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-4.5 py-2 text-xs font-bold text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
             >
               <span>Sign Up</span>
@@ -135,109 +137,90 @@ export const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      {/* 1. Hero Section (Overhauled - Speedometer Removed) */}
-      <section className="relative overflow-hidden pt-16 pb-24 px-6 border-b border-gray-200 bg-gradient-to-b from-white to-[#F4F6F5]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3.5 py-1 text-xs font-bold text-[#006837] border border-emerald-200">
-              <Sparkles className="w-3.5 h-3.5 text-[#006837]" />
-              <span>Next-Generation Workforce Alignment Suite</span>
-            </div>
+      {/* 1. Page-Native Video Hero Section (Centered Layout, High-Converting Hero Hierarchy) */}
+      <section className="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden bg-[#0A1A14] text-white px-4 sm:px-8 lg:px-12 py-16 border-b border-emerald-950">
+        
+        {/* Corporate Office Workspace Image with Employees Working */}
+        <img
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=2400"
+          alt="NexaWork Office Workspace & Employees Working"
+          className="absolute inset-0 h-full w-full object-cover scale-105 transition-all duration-1000 brightness-[0.65]"
+        />
 
-            <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-[#1C1F1E] tracking-tight leading-[1.1]">
-              Every workday, <br />
-              <span className="text-[#006837]">perfectly aligned.</span>
-            </h1>
+        {/* Noise Texture & Glow Overlays */}
+        <div className="noise-overlay pointer-events-none absolute inset-0 opacity-[0.45] mix-blend-overlay z-1" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0A1A14]/90 via-[#0A1A14]/50 to-[#0A1A14] z-1" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#006837]/25 rounded-full blur-3xl animate-pulse z-1" />
 
-            <p className="text-base text-[#6B7280] leading-relaxed max-w-xl">
-              NexaWork unites workforce attendance, instant emergency leave logging, conflict-aware approvals, and auto-synchronized payroll into one intuitive platform built for HR leaders and employees.
-            </p>
+        {/* Main Hero Content Container (Centered) */}
+        <div className="relative z-10 max-w-4xl w-full mx-auto text-center space-y-8 my-auto pt-6">
+          
+          {/* Centered Motion Title */}
+          <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.08] max-w-4xl mx-auto">
+            <WordsPullUp text="Every workday," className="inline-block text-white" />
+            <span className="text-[#7EC9A0] block mt-1 sm:mt-2">
+              <WordsPullUp text="perfectly aligned." showAsterisk />
+            </span>
+          </h1>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={() => setCurrentView('auth')}
-                className="rounded-xl bg-[#006837] hover:bg-[#05522C] px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all cursor-pointer flex items-center gap-2"
-              >
-                <span>Login</span>
-                <ArrowRight className="w-4 h-4 text-emerald-300" />
-              </button>
-              <button
-                onClick={() => setCurrentView('auth')}
-                className="rounded-xl border border-gray-300 bg-white hover:bg-gray-50 px-6 py-3.5 text-sm font-semibold text-[#1C1F1E] transition-colors cursor-pointer shadow-2xs"
-              >
-                Sign Up
-              </button>
-            </div>
+          {/* Centered Subtitle Description */}
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="text-base sm:text-lg text-emerald-100/85 leading-relaxed max-w-2xl mx-auto text-center font-normal"
+          >
+            NexaWork unites workforce attendance, instant emergency leave logging, conflict-aware approvals, and auto-synchronized payroll into one intuitive platform built for HR leaders and employees.
+          </motion.p>
 
-            <div className="flex flex-wrap items-center gap-6 pt-4 text-xs text-[#6B7280]">
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#006837]" />
-                <span>Geofenced Check-in</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#006837]" />
-                <span>Instant Emergency Half-Day</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-[#006837]" />
-                <span>Auto-Reconciled Payroll</span>
-              </div>
-            </div>
+          {/* Centered Action Pill Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <motion.button
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              onClick={() => navigateToAuth('signin')}
+              className="group inline-flex items-center gap-3 rounded-full bg-[#006837] hover:bg-[#05522C] py-2.5 pl-7 pr-2.5 text-sm font-bold text-white shadow-2xl border border-emerald-400/40 transition-all cursor-pointer hover:gap-4 active:scale-95"
+            >
+              <span>Sign In to Workspace</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#006837] transition-transform group-hover:scale-110 shadow-sm">
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </motion.button>
+
+            <motion.button
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              onClick={() => navigateToAuth('signup')}
+              className="group inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 hover:bg-white/20 backdrop-blur-md px-7 py-4 text-sm font-semibold text-white transition-all cursor-pointer shadow-lg active:scale-95"
+            >
+              <span>Create Account</span>
+              <ChevronRight className="w-4 h-4 text-emerald-200 group-hover:translate-x-0.5 transition-transform" />
+            </motion.button>
           </div>
 
-          {/* Hero Visual Card Stack */}
-          <div className="lg:col-span-5 relative">
-            <div className="rounded-3xl bg-white p-6 border border-gray-200 shadow-xl space-y-4">
-              {/* Header Badge */}
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-500" />
-                  <span className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-500" />
-                </div>
-                <span className="text-[11px] font-bold text-[#006837] bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  Live Workforce Sync Active
-                </span>
-              </div>
-
-              {/* Stat Preview Cards */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-[#006837] to-[#0A522E] text-white">
-                  <span className="text-[11px] text-emerald-100 font-semibold block">Total Workforce</span>
-                  <strong className="font-display font-extrabold text-2xl">24 Active</strong>
-                  <span className="text-[10px] text-emerald-200 block mt-1">+3 added this month</span>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                  <span className="text-[11px] text-gray-500 font-semibold block">Present Today</span>
-                  <strong className="font-display font-extrabold text-2xl text-gray-900">95% On-Time</strong>
-                  <span className="text-[10px] text-[#006837] font-bold block mt-1">Healthy Alignment</span>
-                </div>
-              </div>
-
-              {/* Activity Item Mockup */}
-              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 text-[#006837] font-bold flex items-center justify-center">
-                    AD
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">Alexandra Deff</div>
-                    <div className="text-[11px] text-gray-500">Task Completed • Github Repo Sync</div>
-                  </div>
-                </div>
-                <span className="bg-emerald-100 text-[#006837] text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  Completed
-                </span>
-              </div>
+          {/* Centered Feature Badges Bar */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-4 text-xs font-semibold text-emerald-100/90">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/15 shadow-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>Geofenced Check-in</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/15 shadow-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>Instant Emergency Half-Day</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/15 shadow-sm">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>Auto-Reconciled Payroll</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* 2. Impact Strip */}
-      <section id="impact" className="bg-[#006837] text-white py-10 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x divide-white/15">
+      <section id="impact" className="bg-[#006837] text-white py-10 px-4 sm:px-8 lg:px-12">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center divide-y sm:divide-y-0 sm:divide-x divide-white/15">
           <div className="pt-2 sm:pt-0">
             <div className="font-display text-4xl font-extrabold tracking-tight text-white">48.5 hrs</div>
             <div className="text-xs text-emerald-200 font-medium mt-1">
@@ -260,7 +243,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* 3. Organization Culture & Workplace Galleries */}
-      <section id="gallery" className="py-20 px-6 max-w-7xl mx-auto space-y-10">
+      <section id="gallery" className="py-20 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#006837] border border-emerald-200">
             <Camera className="w-3.5 h-3.5" />
@@ -352,8 +335,8 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* 4. Client & Enterprise Testimonials Wall */}
-      <section id="testimonials" className="bg-white py-20 px-6 border-y border-gray-200">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section id="testimonials" className="bg-white py-20 px-4 sm:px-8 lg:px-12 border-y border-gray-200">
+        <div className="max-w-[1400px] mx-auto space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-[#006837]">
               <Star className="w-3.5 h-3.5 fill-current" />
@@ -429,8 +412,8 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* 5. Rich Multi-Column Footer */}
-      <footer className="bg-[#0B1E17] text-white pt-16 pb-12 px-6 border-t border-emerald-950">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <footer className="bg-[#0B1E17] text-white pt-16 pb-12 px-4 sm:px-8 lg:px-12 border-t border-emerald-950">
+        <div className="max-w-[1400px] mx-auto space-y-12">
           {/* Top Footer Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Col 1: Brand & Logo */}

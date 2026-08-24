@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { useApp } from '../../lib/context/AppContext';
-import { ArrowRight, Lock, Mail, User, Shield, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Lock, Mail, User, Shield, AlertTriangle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { NexaWorkLogo } from '../../components/layout/NexaWorkLogo';
 import { usePasswordStrength } from '../../hooks/usePasswordStrength';
 import { PasswordStrengthMeter } from '../../components/ui/PasswordStrengthMeter';
 import { supabase, isSupabaseConfigured } from '../../lib/supabaseClient';
+import { Typewriter } from '@/components/ui/auth-fuse';
 
 export const AuthPage: React.FC = () => {
-  const { login, setCurrentView, showToast } = useApp();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const { login, setCurrentView, showToast, authMode, setAuthMode } = useApp();
+  const [isSignUp, setIsSignUp] = useState(authMode === 'signup');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  React.useEffect(() => {
+    setIsSignUp(authMode === 'signup');
+  }, [authMode]);
 
   // Form Fields
   const [employeeId, setEmployeeId] = useState('');
@@ -193,64 +200,68 @@ export const AuthPage: React.FC = () => {
     login('employee', registeredUser);
   };
 
+  const bgImage = isSignUp
+    ? 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1600'
+    : 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1600';
+
+  const quoteText = isSignUp
+    ? 'Create an account to join the next-generation AI-driven HR ecosystem.'
+    : 'Welcome Back! Streamlining enterprise workforce operations seamlessly.';
+
+  const quoteAuthor = isSignUp ? 'NexaWork Registration Gate' : 'NexaWork HR Operations Suite';
+
   return (
-    <div className="min-h-screen bg-[#F4F6F5] flex flex-col justify-center items-center p-6 text-[#1C1F1E] relative">
-      <div className="w-full max-w-md space-y-6">
-        {/* Prominent Top Back Button */}
-        <div className="flex items-center justify-between">
+    <div className="w-full min-h-screen bg-[#F4F6F5] md:grid md:grid-cols-2 text-[#1C1F1E]">
+      <style>{`
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+          display: none;
+        }
+      `}</style>
+
+      {/* Left Form Panel — Placed directly on the page layout without an inner card wrapper */}
+      <div className="flex flex-col justify-between p-6 md:p-10 lg:p-14 overflow-y-auto max-h-screen">
+        {/* Navigation & Header */}
+        <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => setCurrentView('landing')}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-gray-100 border border-gray-200 text-xs font-bold text-[#1C1F1E] shadow-2xs transition-all cursor-pointer group"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-emerald-50 border border-gray-200 text-xs font-bold text-[#1C1F1E] hover:text-[#006837] shadow-2xs transition-all cursor-pointer group"
           >
-            <ArrowLeft className="w-4 h-4 text-gray-500 group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft className="w-4 h-4 text-gray-500 group-hover:text-[#006837] group-hover:-translate-x-0.5 transition-transform" />
             <span>Back to Home</span>
           </button>
 
-          <span className="text-xs font-semibold text-gray-400">
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#EBF5F0] text-[#006837]">
             {isSignUp ? 'Registration Gate' : 'Workspace Sign-In'}
           </span>
         </div>
 
-        {/* Official NexaWork Logo */}
-        <div
-          onClick={() => setCurrentView('landing')}
-          className="flex flex-col items-center cursor-pointer group py-2"
-        >
-          <NexaWorkLogo size="xl" showTagline={true} />
-        </div>
+        {/* Form Section directly on page */}
+        <div className="mx-auto w-full max-w-sm space-y-6 my-auto">
+          {/* Logo */}
+          <div
+            onClick={() => setCurrentView('landing')}
+            className="flex flex-col items-center cursor-pointer group py-1"
+          >
+            <NexaWorkLogo size="xl" showTagline={true} />
+          </div>
 
-        {/* Auth Card */}
-        <div className="rounded-3xl bg-white p-8 border border-gray-200 shadow-sm space-y-6">
-          {/* Tabs */}
-          <div className="flex rounded-xl bg-[#F4F6F5] p-1 text-xs font-semibold">
-            <button
-              onClick={() => {
-                setIsSignUp(false);
-                setGateError(null);
-              }}
-              className={`flex-1 py-2 rounded-lg transition-all cursor-pointer ${
-                !isSignUp ? 'bg-white text-[#1C1F1E] shadow-2xs font-bold' : 'text-[#6B7280]'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                setIsSignUp(true);
-                setGateError(null);
-              }}
-              className={`flex-1 py-2 rounded-lg transition-all cursor-pointer ${
-                isSignUp ? 'bg-white text-[#1C1F1E] shadow-2xs font-bold' : 'text-[#6B7280]'
-              }`}
-            >
-              Register
-            </button>
+          {/* Heading */}
+          <div className="text-center space-y-1.5">
+            <h1 className="text-2xl font-bold font-display text-[#1C1F1E] tracking-tight">
+              {isSignUp ? 'Create an account' : 'Sign in to your account'}
+            </h1>
+            <p className="text-xs text-[#6B7280]">
+              {isSignUp
+                ? 'Enter your details below to request workspace access'
+                : 'Enter your credentials below to access your workspace'}
+            </p>
           </div>
 
           {/* Gate Error Alert */}
           {gateError && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-start gap-2 animate-in fade-in">
-              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
               <span>{gateError}</span>
             </div>
           )}
@@ -259,44 +270,52 @@ export const AuthPage: React.FC = () => {
           {!isSignUp ? (
             <form onSubmit={handleSignIn} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Employee ID or Corporate Email
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="COEDELKOLH00508 or name@nexawork.com"
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-[#006837] hover:bg-[#05522C] py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                disabled={isLoading}
+                className="w-full rounded-xl bg-[#006837] hover:bg-[#05522C] py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.99]"
               >
-                <span>Sign In to Workspace</span>
+                <span>{isLoading ? 'Authenticating...' : 'Sign In to Workspace'}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
               </button>
             </form>
@@ -304,18 +323,18 @@ export const AuthPage: React.FC = () => {
             /* Registration Form with Database Recruitment Gate & Password Strength Engine */
             <form onSubmit={handleRegister} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Employee ID <span className="text-gray-400 font-normal">(e.g. COEDELKOLH00508)</span>
                 </label>
                 <div className="relative">
-                  <Shield className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Shield className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     required
                     value={employeeId}
                     onChange={(e) => setEmployeeId(e.target.value.toUpperCase())}
                     placeholder="COEDELKOLH00508"
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-mono font-bold text-[#006837] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs font-mono font-bold text-[#006837] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
                 </div>
                 <p className="text-[10px] text-gray-400 mt-1">
@@ -324,54 +343,61 @@ export const AuthPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Aditi Shah"
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Corporate Email
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="aditi.shah@nexawork.com"
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
                 </div>
               </div>
 
               {/* Password Field with Strength Meter */}
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Set a strong password..."
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
 
                 {/* Real-time Password Strength Meter */}
@@ -379,73 +405,136 @@ export const AuthPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1">
+                <label className="block text-xs font-semibold text-[#1C1F1E] mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm password..."
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837]"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-300 bg-white text-xs text-[#1C1F1E] outline-none focus:border-[#006837] focus:ring-2 focus:ring-[#006837]/20 transition-all shadow-2xs"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
-              {/* Security Gate Button: Disabled if strength <= 50% or rules fail */}
+              {/* Security Gate Button */}
               <button
                 type="submit"
-                disabled={!strength.isUnlocked}
+                disabled={!strength.isUnlocked || isLoading}
                 className={`w-full rounded-xl py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   strength.isUnlocked
                     ? 'bg-[#006837] hover:bg-[#05522C]'
                     : 'bg-gray-300 cursor-not-allowed opacity-75'
                 }`}
               >
-                <span>Register Account</span>
+                <span>{isLoading ? 'Processing...' : 'Register Account'}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-300" />
               </button>
             </form>
           )}
 
-          {/* Quick Demo Access */}
-          <div className="pt-4 border-t border-gray-100 space-y-3">
-            <div className="text-[11px] font-semibold text-[#6B7280] text-center uppercase tracking-wider">
-              Or Instant Demo Sign-In
+          <div className="text-center text-xs text-[#6B7280] pt-1">
+            {isSignUp ? (
+              <span>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('signin');
+                    setIsSignUp(false);
+                    setGateError(null);
+                  }}
+                  className="font-bold text-[#006837] hover:underline cursor-pointer"
+                >
+                  Sign in
+                </button>
+              </span>
+            ) : (
+              <span>
+                Don't have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('signup');
+                    setIsSignUp(true);
+                    setGateError(null);
+                  }}
+                  className="font-bold text-[#006837] hover:underline cursor-pointer"
+                >
+                  Sign up
+                </button>
+              </span>
+            )}
+          </div>
+
+          {/* Or Continue With Section */}
+          <div className="space-y-3 pt-1">
+            <div className="relative text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-gray-200">
+              <span className="relative z-10 bg-[#F4F6F5] px-3 text-[#6B7280] font-medium">Or continue with</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => login('admin')}
-                className="rounded-xl border border-[#006837]/30 bg-emerald-50 hover:bg-emerald-100 p-2.5 text-center transition-colors cursor-pointer"
-              >
-                <div className="font-bold text-xs text-[#006837]">Admin / HR Mode</div>
-                <div className="text-[10px] text-[#6B7280]">Eleanor Vance</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => login('employee')}
-                className="rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 p-2.5 text-center transition-colors cursor-pointer"
-              >
-                <div className="font-bold text-xs text-blue-800">Employee Mode</div>
-                <div className="text-[10px] text-[#6B7280]">Ravi Sharma</div>
-              </button>
-            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                showToast("Redirecting to Google Enterprise SSO Authentication...", "info");
+              }}
+              className="w-full rounded-xl border border-gray-300 bg-white hover:bg-gray-50 py-2.5 text-xs font-semibold text-[#1C1F1E] shadow-2xs transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google Icon"
+                className="h-4 w-4"
+              />
+              <span>Continue with Google</span>
+            </button>
           </div>
         </div>
 
-        {/* Bottom Back Button Link */}
-        <div className="text-center">
-          <button
-            onClick={() => setCurrentView('landing')}
-            className="text-xs text-[#6B7280] hover:text-[#1C1F1E] font-semibold flex items-center justify-center gap-1 mx-auto transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to NexaWork Overview</span>
-          </button>
+        {/* Footer info */}
+        <div className="text-center pt-4">
+          <p className="text-[11px] text-gray-400">
+            NexaWork Enterprise Management &bull; DayFlow HR Platform &copy; 2026
+          </p>
+        </div>
+      </div>
+
+      {/* Right Hero Image & Typewriter Quote Panel (Auth Fuse Effect) */}
+      <div
+        className="hidden md:block relative bg-cover bg-center transition-all duration-700 ease-in-out"
+        style={{ backgroundImage: `url(${bgImage})` }}
+        key={bgImage}
+      >
+        {/* Overlay Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#144933]/90 via-[#1C1F1E]/50 to-transparent" />
+
+        {/* Bottom Quote Box */}
+        <div className="relative z-10 flex h-full flex-col justify-end p-12 text-white">
+          <div className="max-w-xl bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-2xl space-y-3">
+            <blockquote className="space-y-2">
+              <p className="text-xl font-medium tracking-tight text-white leading-relaxed">
+                “<Typewriter
+                  key={quoteText}
+                  text={quoteText}
+                  speed={50}
+                  cursor="|"
+                />”
+              </p>
+              <cite className="block text-xs font-light text-emerald-200 not-italic tracking-wide">
+                — {quoteAuthor}
+              </cite>
+            </blockquote>
+          </div>
         </div>
       </div>
     </div>
