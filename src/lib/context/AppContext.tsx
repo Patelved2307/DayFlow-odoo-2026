@@ -668,29 +668,107 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const checkIn = () => {
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const todayStr = new Date().toISOString().split('T')[0];
+    const userToUse = currentUser || EMPLOYEE_USER;
+    
     setIsCheckedIn(true);
     setCheckInTime(now);
-    showToast(`Checked in successfully at ${now}`, 'success');
+
+    // Update or add today's attendance record
+    setAttendanceRecords((prev) => {
+      const existing = prev.find((a) => (a.employeeId === userToUse.employeeId || a.employeeName === userToUse.name) && a.date === todayStr);
+      if (existing) {
+        return prev.map((a) => (a.id === existing.id ? { ...a, checkIn: now, status: 'Present' } : a));
+      }
+      return [
+        {
+          id: 'att-' + Date.now(),
+          employeeId: userToUse.employeeId,
+          employeeName: userToUse.name,
+          employeeAvatar: userToUse.avatar,
+          department: userToUse.department || 'Engineering',
+          date: todayStr,
+          checkIn: now,
+          checkOut: '--:--',
+          workedHours: 0,
+          status: 'Present',
+          location: 'HQ Geofence Verified (32m)',
+        },
+        ...prev,
+      ];
+    });
+
     addActivity({
       type: 'check_in',
-      employeeName: currentUser?.name || 'Ravi Sharma',
-      employeeAvatar: currentUser?.avatar || '',
-      title: `checked in at ${now}`,
+      employeeName: userToUse.name,
+      employeeAvatar: userToUse.avatar,
+      title: `checked in at ${now} (GPS Geofence Verified)`,
       badgeType: 'success',
     });
+
+    // Automatically send automated email notification
+    sendAutomatedEmail({
+      to: userToUse.email || 'employee@nexawork.com',
+      subject: `Shift Started: Check-in Verified at ${now}`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: userToUse.name,
+        type: 'Geofenced Check-In',
+        daysCount: 1,
+        startDate: todayStr,
+        endDate: todayStr,
+        reason: `GPS Location verified inside 50m HQ radius at ${now}`,
+        status: 'Approved',
+        adminComment: 'Shift timer active. Workday focus recorded.',
+      },
+    });
+
+    showToast(`Checked in at ${now}. Geofence verified & confirmation email sent!`, 'success');
   };
 
   const checkOut = () => {
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const todayStr = new Date().toISOString().split('T')[0];
+    const userToUse = currentUser || EMPLOYEE_USER;
+    const hoursNum = parseFloat((workedSeconds / 3600).toFixed(1));
+
     setIsCheckedIn(false);
-    showToast(`Checked out successfully at ${now}. Workday logged!`, 'info');
+
+    // Update attendance record check-out time & hours
+    setAttendanceRecords((prev) =>
+      prev.map((a) =>
+        (a.employeeId === userToUse.employeeId || a.employeeName === userToUse.name) && a.date === todayStr
+          ? { ...a, checkOut: now, workedHours: hoursNum, status: 'Present' }
+          : a
+      )
+    );
+
     addActivity({
       type: 'check_out',
-      employeeName: currentUser?.name || 'Ravi Sharma',
-      employeeAvatar: currentUser?.avatar || '',
-      title: `checked out at ${now} (${(workedSeconds / 3600).toFixed(1)} hrs worked)`,
+      employeeName: userToUse.name,
+      employeeAvatar: userToUse.avatar,
+      title: `checked out at ${now} (${hoursNum} hrs worked)`,
       badgeType: 'info',
     });
+
+    // Automatically send automated email notification for completed shift
+    sendAutomatedEmail({
+      to: userToUse.email || 'employee@nexawork.com',
+      subject: `Shift Completed: Workday Logged (${hoursNum} hrs)`,
+      type: 'LEAVE_STATUS',
+      data: {
+        employeeName: userToUse.name,
+        type: 'Workday Shift Check-out',
+        daysCount: 1,
+        startDate: todayStr,
+        endDate: todayStr,
+        reason: `Shift logged from ${checkInTime || '09:00 AM'} to ${now} (${hoursNum} hrs total)`,
+        status: 'Approved',
+        adminComment: 'Shift recorded cleanly to PostgreSQL database and Nodemailer dispatch log.',
+      },
+    });
+
+    showToast(`Checked out at ${now}. Workday logged & summary email dispatched!`, 'info');
   };
 
   const runPayrollCalculation = (month: string) => {

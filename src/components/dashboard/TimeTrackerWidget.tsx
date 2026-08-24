@@ -4,21 +4,8 @@ import { useApp } from '../../lib/context/AppContext';
 import { motion } from 'framer-motion';
 
 export const TimeTrackerWidget: React.FC = () => {
-  const { showToast, isCheckedIn, checkOut, checkIn, checkInTime } = useApp();
-  const [seconds, setSeconds] = useState(6 * 3600 + 15 * 60 + 22); // 06:15:22
+  const { showToast, isCheckedIn, checkOut, checkIn, checkInTime, workedSeconds } = useApp();
   const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    let timer: any = null;
-    if (isCheckedIn && !isPaused) {
-      timer = setInterval(() => {
-        setSeconds((prev) => prev + 1);
-      }, 1000);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [isCheckedIn, isPaused]);
 
   const formatTime = (totalSec: number) => {
     const hrs = Math.floor(totalSec / 3600);
@@ -29,12 +16,11 @@ export const TimeTrackerWidget: React.FC = () => {
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const shiftProgressPercent = Math.min(Math.round((seconds / (8 * 3600)) * 100), 100);
+  const shiftProgressPercent = Math.min(Math.round((workedSeconds / (8 * 3600)) * 100), 100);
 
   const handleTogglePause = () => {
     if (!isCheckedIn) {
       checkIn();
-      showToast('Checked in successfully! Geofence verified.', 'success');
       return;
     }
     setIsPaused((prev) => !prev);
@@ -42,8 +28,11 @@ export const TimeTrackerWidget: React.FC = () => {
   };
 
   const handleClockOut = () => {
+    if (!isCheckedIn) {
+      showToast('You are currently off duty.', 'info');
+      return;
+    }
     checkOut();
-    showToast('Clocked out successfully! Shift logged to PostgreSQL database.', 'success');
   };
 
   const handleLogBreak = () => {
@@ -74,7 +63,7 @@ export const TimeTrackerWidget: React.FC = () => {
       {/* Center Clock Display & Geofence Tag */}
       <div className="relative z-10 my-3 text-center space-y-1">
         <div className="font-mono font-extrabold text-4xl sm:text-5xl text-white tracking-tight drop-shadow-md">
-          {formatTime(seconds)}
+          {formatTime(workedSeconds)}
         </div>
 
         <div className="flex items-center justify-center gap-1.5 text-xs text-emerald-200/80 pt-0.5">
