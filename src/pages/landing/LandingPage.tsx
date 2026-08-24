@@ -26,8 +26,77 @@ import {
   DollarSign,
   XCircle,
   Zap,
+  Database,
+  Lock,
 } from 'lucide-react';
 import { FoldText } from '../../components/ui/FoldText';
+import LogoLoop, { LogoItem } from '../../components/ui/LogoLoop';
+
+const enterprisePartners: LogoItem[] = [
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <Award className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">Odoo Hackathon 2026</span>
+      </div>
+    ),
+    title: 'Odoo Hackathon 2026',
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <Database className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">Supabase PostgreSQL</span>
+      </div>
+    ),
+    title: 'Supabase Database',
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <ShieldCheck className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">ISO 27001 HR Security</span>
+      </div>
+    ),
+    title: 'ISO Security',
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <Sparkles className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">AI Conflict Detector</span>
+      </div>
+    ),
+    title: 'AI Copilot',
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <MapPin className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">GPS Geofence Radar</span>
+      </div>
+    ),
+    title: 'Geofence Radar',
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <DollarSign className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">Auto-Payroll Engine</span>
+      </div>
+    ),
+    title: 'Auto Payroll',
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2.5 bg-[#0D261B] px-4 py-2 rounded-2xl border border-emerald-800/60 text-white shadow-sm hover:border-emerald-400 transition-colors shrink-0">
+        <Lock className="w-4 h-4 text-[#7EC9A0]" />
+        <span className="font-display font-bold text-xs tracking-wide">100% Tax Compliant</span>
+      </div>
+    ),
+    title: 'Tax Compliant',
+  },
+];
 
 export const LandingPage: React.FC = () => {
   const { setCurrentView, login, showToast, navigateToAuth } = useApp();
@@ -102,7 +171,7 @@ export const LandingPage: React.FC = () => {
 
       {/* 1. Page-Native Eco-Workspace Hero Section */}
       <section className="relative w-full min-h-[85vh] sm:min-h-[90vh] lg:min-h-[92vh] flex flex-col justify-center items-center overflow-hidden bg-[#0A1A14] text-white px-4 sm:px-8 lg:px-12 py-16 border-b border-emerald-950">
-        
+
         {/* Integrated Eco-Friendly Modern Office Workspace Image */}
         <img
           src="/assets/office-hero.jpg"
@@ -117,7 +186,7 @@ export const LandingPage: React.FC = () => {
 
         {/* Main Hero Content Container (Centered) */}
         <div className="relative z-10 max-w-4xl w-full mx-auto text-center space-y-8 my-auto pt-6">
-          
+
           {/* Centered Motion Title with 3D FoldText Animation */}
           <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-white tracking-tight leading-[1.08] max-w-4xl mx-auto">
             <span className="block text-white">Every workday,</span>
@@ -255,11 +324,10 @@ export const LandingPage: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">
           <button
             onClick={() => setActiveStoryStep('09:00')}
-            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
-              activeStoryStep === '09:00'
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${activeStoryStep === '09:00'
                 ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
                 : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
-            }`}
+              }`}
           >
             <Clock className="w-4 h-4" />
             <span>09:00 AM • Geofence Punch</span>
@@ -267,11 +335,10 @@ export const LandingPage: React.FC = () => {
 
           <button
             onClick={() => setActiveStoryStep('01:30')}
-            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
-              activeStoryStep === '01:30'
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${activeStoryStep === '01:30'
                 ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
                 : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
-            }`}
+              }`}
           >
             <AlertTriangle className="w-4 h-4 text-amber-300" />
             <span>01:30 PM • Emergency Fast-Track</span>
@@ -279,11 +346,10 @@ export const LandingPage: React.FC = () => {
 
           <button
             onClick={() => setActiveStoryStep('04:00')}
-            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
-              activeStoryStep === '04:00'
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${activeStoryStep === '04:00'
                 ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
                 : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
-            }`}
+              }`}
           >
             <Sparkles className="w-4 h-4 text-emerald-300" />
             <span>04:00 PM • AI HR Copilot</span>
@@ -291,11 +357,10 @@ export const LandingPage: React.FC = () => {
 
           <button
             onClick={() => setActiveStoryStep('06:00')}
-            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
-              activeStoryStep === '06:00'
+            className={`px-5 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${activeStoryStep === '06:00'
                 ? 'bg-[#006837] text-white border-[#006837] shadow-lg scale-105 ring-4 ring-emerald-100'
                 : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
-            }`}
+              }`}
           >
             <DollarSign className="w-4 h-4 text-emerald-300" />
             <span>06:00 PM • Auto-Payroll Run</span>
