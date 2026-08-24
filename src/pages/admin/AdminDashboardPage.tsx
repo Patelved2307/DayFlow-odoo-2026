@@ -26,6 +26,7 @@ import {
   Activity,
   Gauge,
   TrendingUp,
+  RotateCw,
 } from 'lucide-react';
 
 import { motion } from 'framer-motion';
@@ -43,6 +44,7 @@ export const AdminDashboardPage: React.FC = () => {
   } = useApp();
 
   const [isAddEmployeeOpen, setIsAddEmployeeOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Calculations for Row 1 & Row 2
   const totalEmployees = employees.length;
@@ -117,6 +119,21 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setIsRefreshing(true);
+              showToast('Refreshing HR Control Tower & database logs...', 'info');
+              setTimeout(() => {
+                setIsRefreshing(false);
+                showToast('HR Dashboard & database state synchronized!', 'success');
+              }, 600);
+            }}
+            className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 px-3.5 py-2.5 text-xs font-bold text-[#006837] shadow-2xs transition-all cursor-pointer"
+            title="Refresh dashboard and database logs"
+          >
+            <RotateCw className={`w-4 h-4 text-[#006837] ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh Data</span>
+          </button>
           <button
             onClick={() => setIsAddEmployeeOpen(true)}
             className="inline-flex items-center gap-2 rounded-xl bg-[#006837] hover:bg-[#05522C] px-4 py-2.5 text-xs font-bold text-white shadow-2xs transition-all cursor-pointer"

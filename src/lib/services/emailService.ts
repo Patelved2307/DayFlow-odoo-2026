@@ -12,9 +12,26 @@ export interface DispatchedEmail {
   dispatchedAt: string;
 }
 
-// In-memory log of dispatched emails for visual UI inspection
-const dispatchedEmailsLog: DispatchedEmail[] = [];
+// Persistent log of dispatched emails for visual UI inspection & real email tracking
+const loadStoredEmails = (): DispatchedEmail[] => {
+  try {
+    const saved = localStorage.getItem('df_dispatched_emails');
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+const dispatchedEmailsLog: DispatchedEmail[] = loadStoredEmails();
 const listeners: Array<(emails: DispatchedEmail[]) => void> = [];
+
+const saveEmailsToStorage = () => {
+  try {
+    localStorage.setItem('df_dispatched_emails', JSON.stringify(dispatchedEmailsLog));
+  } catch (e) {
+    console.warn('[LocalStorage Email Save Note]', e);
+  }
+};
 
 export const subscribeEmailLog = (listener: (emails: DispatchedEmail[]) => void) => {
   listeners.push(listener);
@@ -26,6 +43,7 @@ export const subscribeEmailLog = (listener: (emails: DispatchedEmail[]) => void)
 };
 
 const notifyListeners = () => {
+  saveEmailsToStorage();
   listeners.forEach((fn) => fn([...dispatchedEmailsLog]));
 };
 

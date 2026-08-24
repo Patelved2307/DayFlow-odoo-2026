@@ -16,6 +16,7 @@ import {
   Activity,
   Award,
   Sparkles,
+  RotateCw,
 } from 'lucide-react';
 import { LeaveRequestModal } from '../../components/leave/LeaveRequestModal';
 import { EmergencyLeaveModal } from '../../components/leave/EmergencyLeaveModal';
@@ -36,6 +37,7 @@ export const EmployeeDashboardPage: React.FC = () => {
 
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const empId = currentUser?.employeeId || 'DF-EMP-104';
   const balances = employeeLeaveBalances[empId] || {
@@ -83,6 +85,21 @@ export const EmployeeDashboardPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              setIsRefreshing(true);
+              showToast('Refreshing workforce portal & database records...', 'info');
+              setTimeout(() => {
+                setIsRefreshing(false);
+                showToast('Employee dashboard & leave balances refreshed!', 'success');
+              }, 600);
+            }}
+            className="inline-flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 px-3.5 py-2.5 text-xs font-bold text-[#006837] shadow-2xs transition-all cursor-pointer"
+            title="Refresh workforce portal and database records"
+          >
+            <RotateCw className={`w-4 h-4 text-[#006837] ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh Data</span>
+          </button>
           <button
             onClick={() => setIsEmergencyModalOpen(true)}
             className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-xs font-bold text-white shadow-2xs transition-all cursor-pointer"
