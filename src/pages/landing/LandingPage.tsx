@@ -33,6 +33,7 @@ export const LandingPage: React.FC = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [activeStoryStep, setActiveStoryStep] = useState<'09:00' | '01:30' | '04:00' | '06:00'>('09:00');
   const [simulatedBasicSalary, setSimulatedBasicSalary] = useState<number>(6500);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Live payroll math calculations for interactive simulator
   const hra = Math.round(simulatedBasicSalary * 0.15);
@@ -44,62 +45,6 @@ export const LandingPage: React.FC = () => {
   const tax = 200;
   const totalDeductions = pf + tax;
   const netTakeHome = simulatedBasicSalary + totalAllowances - totalDeductions;
-
-  const galleryImages = [
-    {
-      id: 'g-1',
-      title: 'Eco-Friendly Biophilic Workspace Hub',
-      category: 'tech',
-      location: 'NexaWork Headquarters',
-      image: '/assets/office-hero.jpg',
-      description: 'Lush greenery, ergonomic pods, and eco-friendly workspace designed for high-performance workforce alignment.',
-    },
-    {
-      id: 'g-2',
-      title: 'Annual Workforce Excellence Summit',
-      category: 'leadership',
-      location: 'New York Tech Center',
-      image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80',
-      description: 'Executive town hall sharing workforce alignment strategies and transparent culture roadmap.',
-    },
-    {
-      id: 'g-3',
-      title: 'Collaborative Open Workspace',
-      category: 'culture',
-      location: 'Austin Campus',
-      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop&q=80',
-      description: 'Designed for fluid communication, hybrid sync, and cross-departmental project squads.',
-    },
-    {
-      id: 'g-4',
-      title: 'Design Systems & UX Sprint',
-      category: 'tech',
-      location: 'Design Studio',
-      image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=80',
-      description: 'Pioneering accessible, ultra-clean UI design standards for enterprise workforce software.',
-    },
-    {
-      id: 'g-5',
-      title: 'Team Building & Culture Retreat',
-      category: 'culture',
-      location: 'Lake Tahoe Summit',
-      image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=80',
-      description: 'Fostering trust, mental wellness, and strong interpersonal alignment across teams.',
-    },
-    {
-      id: 'g-6',
-      title: 'Executive Leadership Panel',
-      category: 'leadership',
-      location: 'Global Operations',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80',
-      description: 'Guiding enterprise HR policies, diversity metrics, and scalable employee success.',
-    },
-  ];
-
-  const filteredGallery =
-    activeGalleryTab === 'all'
-      ? galleryImages
-      : galleryImages.filter((img) => img.category === activeGalleryTab);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
